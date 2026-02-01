@@ -25,15 +25,14 @@ module alu #(
 
     always @(*) begin
         case(funct3)
-        ADD: result = invert ? operand_1 + operand_2 : operand_1 - operand_2;
-        SL: result = operand_1 << operand_2[shamt_len];
+        ADD: result = invert ? operand_1 - operand_2 : operand_1 + operand_2;
+        SL: result = operand_1 << operand_2[shamt_len-1:0];
         SLT: result = {{(XLEN-1){1'b0}}, $signed(operand_1) < $signed(operand_2)};
         SLTU: result = {{(XLEN-1){1'b0}}, operand_1 < operand_2};
         XOR: result = operand_1 ^ operand_2;
-        SR: result = invert?$signed(operand_1)>>>operand_2[shamt_len]:operand_1>>operand_2[shamt_len];
+        SR: result = invert?$unsigned($signed(operand_1)>>>operand_2[shamt_len-1:0]):operand_1>>operand_2[shamt_len-1:0];
         OR: result = operand_1 | operand_2;
         AND: result = operand_1 & operand_2;
-        default: result = 'z;
         endcase
     end
 
