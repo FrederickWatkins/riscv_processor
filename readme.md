@@ -5,10 +5,12 @@
 - Port to RV64IMC
 - Add F/D
 - Pipeline (maybe 4 or 5 stage - work out details)
+
 After this point gets much harder:
 - Add Zifencei (just stick a big bubble after each fence instruction)
 - Add A (atomics)
 - Add Zicsr (this ones gonna suck)
+
 At this point we've reached RV64GC so can run standard code, but still need privileged architecture to do anything more complicated. Past this point gets REALLY hard:
 - Privileged modes
 - MMU (and probably TLB, need to add satp to zicsr)
