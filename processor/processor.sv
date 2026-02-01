@@ -1,7 +1,9 @@
 module processor (
     input clk
 );
-    wire [31:0] imm;
+    localparam XLEN = 32;
+
+    wire [XLEN-1:0] imm;
 
     // Register control
     wire [4:0] rd;
@@ -12,7 +14,9 @@ module processor (
     wire [2:0] funct3;
     wire [6:0] funct7;
 
-    control_unit cu (
+    control_unit #(
+        .XLEN(XLEN)
+    ) cu (
         .imm(imm),
         .rd(rd),
         .rs1(rs1),
@@ -23,7 +27,7 @@ module processor (
 
     alu alu_0 (
         .funct3(funct3),
-        .invert_op2(funct7[6])
+        .invert(funct7[6])
     );
 
 endmodule
