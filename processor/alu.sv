@@ -27,8 +27,8 @@ module alu #(
         case(funct3)
         ADD: result = invert ? operand_1 + operand_2 : operand_1 - operand_2;
         SL: result = operand_1 << operand_2[shamt_len];
-        SLT: result = $signed(operand_1) < $signed(operand_2);
-        SLTU: result = operand_1 < operand_2;
+        SLT: result = {{(XLEN-1){1'b0}}, $signed(operand_1) < $signed(operand_2)};
+        SLTU: result = {{(XLEN-1){1'b0}}, operand_1 < operand_2};
         XOR: result = operand_1 ^ operand_2;
         SR: result = invert?$signed(operand_1)>>>operand_2[shamt_len]:operand_1>>operand_2[shamt_len];
         OR: result = operand_1 | operand_2;

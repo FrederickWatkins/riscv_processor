@@ -1,5 +1,3 @@
-import bus_inputs::*;
-
 module control_unit #(
     parameter XLEN = 32
 )(
@@ -38,7 +36,7 @@ module control_unit #(
     wire [4:0] opcode = instruction[6:2];
 
     // Instruction formats
-    typedef enum logic { 
+    typedef enum { 
         R_TYPE,
         I_TYPE,
         S_TYPE,
@@ -50,12 +48,12 @@ module control_unit #(
     instr_type instr_fmt;
 
     wire [1:0] instr_comp = instr_in[1:0];
-    wire [31:0] instruction = instr_comp=='b11?instr_in:exp_instruction;
+    wire [31:0] instruction = (instr_comp=='b11)?instr_in:exp_instruction;
     
     wire [31:0] exp_instruction;
     expander expander_0 (
-        .comp_instr(instr_in[15:0]),
-        .exp_instr(exp_instruction)
+        .comp_instruction(instr_in[15:0]),
+        .exp_instruction(exp_instruction)
     );
 
     assign rd = instruction[11:7];
@@ -96,8 +94,8 @@ module control_unit #(
             instr_fmt = U_TYPE;
         end
         default: begin
-            $stop; // Unsupported op code
-            instr_fmt = 'z;
+            //$stop; // Unsupported op code
+            instr_fmt = instr_type'('x);
         end
         endcase
     end
@@ -114,26 +112,26 @@ module control_unit #(
         end
         I_TYPE: begin
             rd_we = 1;
-            imm = {(XLEN-11){instruction[31]}, instruction[30:20]};
+            imm = {{(XLEN-11){instruction[31]}}, instruction[30:20]};
             // Special shift case
             if(opcode == OP_IMM & (funct3 == 'b101 | funct3 == 'b001)) begin
-                funct7 = XLEN==32?instruction[31:25]:{instruction[31:26], 'b0};
-                imm = XLEN==32?{(XLEN-5){'b0}, instruction[24:20]}:{{(XLEN-6){'b0}, instruction[25:20]}};
+                funct7 = XLEN==32?instruction[31:25]:{instruction[31:26], 1'b0};
+                imm = XLEN==32?{{(XLEN-5){1'b0}}, instruction[24:20]}:{{(XLEN-6){1'b0}}, instruction[25:20]};
             end
         end
         S_TYPE: begin
-            imm = {(XLEN-11){instruction[31]}, instruction[30:25], instruction[11:7]};
+            imm = {{(XLEN-11){instruction[31]}}, instruction[30:25], instruction[11:7]};
         end
         B_TYPE: begin
-            imm = {(XLEN-12){instruction[31]}, instruction[7], instruction[30:25], instruction[11:8], 'b0};
+            imm = {{(XLEN-12){instruction[31]}}, instruction[7], instruction[30:25], instruction[11:8], 1'b0};
         end
         U_TYPE: begin
             rd_we = 1;
-            imm = {(XLEN-31){instruction[31]}, instruction[30:12], 12{'b0}};
+            imm = {{(XLEN-31){instruction[31]}}, instruction[30:12], {12{1'b0}}};
         end
         J_TYPE: begin
             rd_we = 1;
-            imm = {(XLEN-30){instruction[31]}, instruction[19:12], instruction[20], instruction[30:21], 'b0};
+            imm = {{(XLEN-20){instruction[31]}}, instruction[19:12], instruction[20], instruction[30:21], 1'b0};
         end
         endcase
     end

@@ -14,7 +14,7 @@ module processor (
     wire [2:0] funct3;
     wire [6:0] funct7;
 
-    control_unit #(
+    (* keep = "yes" *) control_unit #(
         .XLEN(XLEN)
     ) cu (
         .imm(imm),
@@ -25,7 +25,7 @@ module processor (
         .funct7(funct7)
     );
 
-    alu alu_0 (
+    (* keep = "yes" *) alu alu_0 (
         .funct3(funct3),
         .invert(funct7[6])
     );

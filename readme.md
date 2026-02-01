@@ -1,6 +1,6 @@
 ## Plan
 - Implement RV32IMC and test working with basic programs
-- Add memory mapped VGA buffer and test with more complex programs (verilator)
+- Add memory mapped VGA buffer (vgalib drwonky) and test with more complex programs (verilator)
 - Add memory mapped keyboard passthrough and continue testing
 - Port to RV64IMC
 - Add F/D
