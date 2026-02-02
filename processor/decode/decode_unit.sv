@@ -1,30 +1,22 @@
-module control_unit #(
+module decode_unit #(
     parameter XLEN = 32
 )(
-    input [31:0] instr_in,
-
-    output logic [XLEN-1:0] imm,
-
-    // Register control
-    output logic rd_we,
-    output [4:0] rd,
-    output [4:0] rs1,
-    output [4:0] rs2,
-
-    // Bus control
-    output bus_1_enum::inputs bus_1_sel,
-    output bus_2_enum::inputs bus_2_sel,
-    output bus_3_enum::inputs bus_3_sel,
-
-    // ALU control
-    output [2:0] funct3,
-    output logic [6:0] funct7,
-
-    // PC control
-    output instr_comp,
-
-    // Main memory control
-    output logic mm_we
+    // Data inputs
+    input logic [31:0] instr_in,
+    // Execute stage control signals
+    .function_sel(function_sel)
+    .rs1_addr(rs1_addr),
+    .rs2_addr(rs2_addr),
+    .funct3(funct3),
+    .funct7(funct7),
+    // Memory stage control signals
+    .mm_re(mm_re),
+    .mm_we(mm_we),
+    // Writeback stage control signals
+    .rd_addr(rd_addr_d0),
+    .rd_we(rd_we_d0),
+    // Data outputs
+    .imm(imm)
 );
     // Opcodes
     localparam LOAD = 'b00000;

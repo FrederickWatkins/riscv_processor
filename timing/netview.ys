@@ -1,8 +1,7 @@
-read_verilog -sv processor/register_file.sv processor/bus_inputs.sv processor/processor.sv processor/alu.sv \
-    processor/control/control_unit.sv processor/control/expander.sv
+read_verilog -sv processor/hazard_unit.sv
 
 proc; opt;        # Process and optimize the design
-hierarchy -top processor
+hierarchy -top hazard_unit
 proc; opt;
 clean
-show processor
+show hazard_unit

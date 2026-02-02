@@ -1,40 +1,23 @@
 module register_file #(
     parameter addr_width = 5,
-    parameter data_width = 32
+    parameter XLEN = 32
 )(
     input wire clk,
-    input wire write_enable,
-    
-    input wire [addr_width-1:0] rs1_addr,
-    output logic [data_width-1:0] rs1_data,
 
-    input wire [addr_width-1:0] rs2_addr,
-    output logic [data_width-1:0] rs2_data,
-
-    input wire [addr_width-1:0] rd_addr,
-    input wire [data_width-1:0] rd_data
+    rf_read_port.rf rs1,
+    rf_read_port.rf rs2,
+    rf_write_port.rf rd
 );
+    logic [XLEN-1:0] ram [(1<<addr_width)-1:1];
 
-    reg [data_width-1:0] ram [(1<<addr_width)-1:1];
-
-    // Synchronous Write: Data is stored on the rising edge
-    always @(posedge clk) begin
-        if (write_enable && rd_addr != 0) begin
-            ram[rd_addr] <= rd_data;
-        end
+    always @(*) begin
+        rs1.data_out = (rs1.addr == 0) ? '0 : ram[rs1.addr];
+        rs2.data_out = (rs2.addr == 0) ? '0 : ram[rs2.addr];
     end
 
-    // Asynchronous Read: Output changes immediately when read_addr changes
-    always @(*) begin
-        if (rs1_addr == 0) begin
-            rs1_data = '0;
-        end else begin
-            rs1_data = ram[rs1_addr];
-        end
-        if (rs2_addr == 0) begin
-            rs2_data = '0;
-        end else begin
-            rs2_data = ram[rs2_addr];
+    always @(posedge clk) begin
+        if (rd.write_enable && (rd.addr != 0)) begin
+            ram[rd.addr] <= rd.data_in;
         end
     end
 endmodule
