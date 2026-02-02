@@ -1,0 +1,12 @@
+# Read all logic flavors
+read_liberty -lib timing/liberty/sky130_fd_sc_hd__tt_025C_1v80.lib
+
+read_verilog -sv processor/register_file.sv processor/bus_inputs.sv processor/processor.sv processor/alu.sv \
+    processor/control/control_unit.sv processor/control/expander.sv
+
+synth -top processor; flatten
+
+dfflibmap -liberty timing/liberty/sky130_fd_sc_hd__tt_025C_1v80.lib
+abc -liberty timing/liberty/sky130_fd_sc_hd__tt_025C_1v80.lib
+stat
+ltp

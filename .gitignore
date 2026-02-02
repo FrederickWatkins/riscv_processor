@@ -4,3 +4,4 @@
 *.runs
 *.sim
 obj_dir
+*.lib

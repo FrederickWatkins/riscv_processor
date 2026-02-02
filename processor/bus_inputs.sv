@@ -1,6 +1,8 @@
 package bus_1_enum;
     typedef enum { 
-        rs1
+        rs1,
+        zero,
+        pc
     } inputs;
 endpackage
 

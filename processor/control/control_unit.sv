@@ -18,7 +18,13 @@ module control_unit #(
 
     // ALU control
     output [2:0] funct3,
-    output logic [6:0] funct7
+    output logic [6:0] funct7,
+
+    // PC control
+    output instr_comp,
+
+    // Main memory control
+    output logic mm_we
 );
     // Opcodes
     localparam LOAD = 'b00000;
@@ -47,8 +53,8 @@ module control_unit #(
 
     instr_type instr_fmt;
 
-    wire [1:0] instr_comp = instr_in[1:0];
-    wire [31:0] instruction = (instr_comp=='b11)?instr_in:exp_instruction;
+    assign instr_comp = instr_in[1:0] != 2'b11;
+    wire [31:0] instruction = instr_comp ? exp_instruction : instr_in;
     
     wire [31:0] exp_instruction;
     expander expander_0 (
@@ -102,9 +108,10 @@ module control_unit #(
 
     always @(*)
     begin
+        mm_we = 0;
         rd_we = 0;
         funct7 = 0;
-        imm = 'z;
+        imm = 'x;
         case(instr_fmt)
         R_TYPE: begin
             rd_we = 1;
@@ -121,6 +128,7 @@ module control_unit #(
         end
         S_TYPE: begin
             imm = {{(XLEN-11){instruction[31]}}, instruction[30:25], instruction[11:7]};
+            mm_we = 1;
         end
         B_TYPE: begin
             imm = {{(XLEN-12){instruction[31]}}, instruction[7], instruction[30:25], instruction[11:8], 1'b0};
