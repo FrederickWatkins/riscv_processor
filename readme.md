@@ -1,3 +1,5 @@
+<img width="602" height="398" alt="output-onlinepngtools" src="https://github.com/user-attachments/assets/7b765bcb-ba90-423b-a4c0-b9209a1f6bad" />
+
 ## Plan
 - Implement RV32IMC and test working with basic programs
 - Add memory mapped VGA buffer (vgalib drwonky) and test with more complex programs (verilator)
@@ -18,3 +20,4 @@ At this point we've reached RV64GC so can run standard code, but still need priv
 - Memory mapped regs (mtime + others)
 - Memory mapped peripherals (SDHCI-SDMA, maybe through AXI-Lite but probably directly memory mapped)
 - Configure software - on chip boot rom, uboot spl, uboot proper, kernel
+
