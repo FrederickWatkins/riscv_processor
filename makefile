@@ -1,6 +1,5 @@
 build: processor/*.sv
-	verilator -Wall -cc processor/bus_inputs.sv processor/control/expander.sv processor/control/control_unit.sv processor/alu.sv processor/processor.sv \
-	--exe testbench/tb_alu.cpp
+	verilator -Wall -cc processor/*.sv
 
 test: build
 	$(MAKE) -C obj_dir -f Valu.mk

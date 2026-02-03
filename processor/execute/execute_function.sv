@@ -1,1 +1,0 @@
-typedef enum logic { alu, branch } execute_function_e;

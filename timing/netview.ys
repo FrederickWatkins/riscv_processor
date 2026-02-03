@@ -1,7 +1,8 @@
-read_verilog -sv processor/hazard_unit.sv
+read_verilog -sv processor/core/ieu/* processor/core/ifu/* processor/core/mmu/* processor/core/core.sv 
 
 proc; opt;        # Process and optimize the design
-hierarchy -top hazard_unit
+hierarchy -top core
 proc; opt;
 clean
-show hazard_unit
+write_json design.json
+show core
