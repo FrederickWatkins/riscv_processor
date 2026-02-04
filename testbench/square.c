@@ -1,6 +1,6 @@
 void __attribute__((naked)) _start(void) {
     __asm__ volatile (
-        "nop;"
+        //"nop;"
         "li x2, 2000;"
         "tail main;"
     );
