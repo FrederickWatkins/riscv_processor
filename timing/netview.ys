@@ -1,8 +1,8 @@
 read_verilog -sv processor/core/ieu/* processor/core/ifu/* processor/core/mmu/* processor/core/core.sv 
 
 proc; opt;        # Process and optimize the design
-hierarchy -top core
+hierarchy -top $env(TOP_MODULE)
 proc; opt;
 clean
-write_json design.json
-show core
+write_json obj_dir/$env(TOP_MODULE).json
+show $env(TOP_MODULE)
