@@ -1,20 +1,23 @@
-build: processor/*.sv
-	verilator -Wall -cc processor/*.sv
+build: build-core build-alu
 
-test: build
-	$(MAKE) -C obj_dir -f Valu.mk
+build-core: processor/**.sv testbench/tb_core.cpp
+	verilator -Wall -cc processor/core/core.sv -y processor/core/ieu -y processor/core/ifu -y processor/core/mmu -exe testbench/tb_core.cpp --build --trace
+	clang --target=riscv32 -march=rv32i -mabi=ilp32 -ffreestanding -nostdlib -T testbench/linker.ld testbench/square.c -o obj_dir/square.elf
+	llvm-objcopy -O binary --only-section=.text obj_dir/square.elf obj_dir/square.bin
 
-run: test
-	./obj_dir/Valu
+build-alu: processor/ieu/alu.sv testbench/tb_alu.cpp
+	verilator -Wall -cc processor/core/core.sv -y processor/core/ieu -y processor/core/ifu -y processor/core/mmu -exe testbench/tb_alu.cpp --build --trace
 
-build-alu: processor/alu.sv
-	verilator -Wall -cc processor/alu.sv --exe testbench/tb_alu.cpp
+test: test-core test-alu
+
+test-core: build-core
+	obj_dir/Vcore
 
 test-alu: build-alu
-	$(MAKE) -C obj_dir -f Valu.mk
+	obj_dir/Valu
 
-run-alu: test-alu
-	./obj_dir/Valu
+waveform-core: test-core
+	nohup gtkwave obj_dir/core.vcd obj_dir/core.sav > /dev/null &
 
 clean:
-	rm -rf obj_dir/
+	rm -r obj_dir/

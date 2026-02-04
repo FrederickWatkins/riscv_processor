@@ -16,13 +16,12 @@ int main(int argc, char** argv) {
     contextp->traceEverOn(true);
     Vcore* core = new Vcore{contextp};
     core->trace(m_trace, 99);
-    m_trace->open("trace.vcd");
-
+    m_trace->open("obj_dir/core.vcd");
     uint instr_addr=0;
     int data_addr=0;
     int data_out=0;
     int data_we=0;
-    std::ifstream file("testbench/square.bin", std::ios::binary);
+    std::ifstream file("obj_dir/square.bin", std::ios::binary);
     if(!file) {
         return 1;
     }
