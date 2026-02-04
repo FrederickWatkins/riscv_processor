@@ -117,6 +117,7 @@ module idu #(
         AUIPC: begin
             instr_fmt = U_TYPE;
             op1_pc = 1;
+            op2_imm = 1;
             rd_we = 1;
             passthrough = 1;
             alu_funct3 = 'b000; // Use alu to add addresses

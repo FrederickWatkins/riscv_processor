@@ -20,7 +20,7 @@ module ieu #(
     output logic mm_we, // Write enable
     output logic passthrough // We want the data we sent out back
 );
-    logic rd_we[wb_delay:0], op1_pc, op2_imm, jump, branch, idu_rd_we;
+    logic rd_we[wb_delay:0], op1_pc, op2_imm, jump, branch, idu_rd_we, idu_mm_we;
     logic [4:0] rs1_addr, rs2_addr, rd_addr[wb_delay:0], idu_rd;
     logic [XLEN-1:0] imm, rs1_data, rs2_data, operand_1, operand_2, alu_res;
     logic [2:0] alu_funct3, funct3;
@@ -31,6 +31,7 @@ module ieu #(
     assign reg_out = rs2_data;
     assign result = jump?inc_pc:alu_res;
     assign ja = alu_res;
+    assign mm_we = stall?0:idu_mm_we;
 
     // Return data delay line
     always @(posedge clk) begin
@@ -74,7 +75,7 @@ module ieu #(
         .jump,
         .branch,
 
-        .mm_we,
+        .mm_we(idu_mm_we),
         .passthrough
     );
 
