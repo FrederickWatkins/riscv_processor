@@ -44,7 +44,7 @@ void main() {
     int branch_check = 0;
     if (reg_a != reg_b) branch_check += 1;  // BNE
     if (reg_a == reg_a) branch_check += 2;  // BEQ
-    if (reg_b < reg_a)  branch_check += 4;  // BLT (Should be false for signed)
+    if (reg_a < reg_b)  branch_check += 4;  // BLT (Should be false for signed)
     if ((unsigned int)reg_b > (unsigned int)reg_a) branch_check += 8; // BGEU/BLTU
     
     results[i++] = branch_check; // 17.

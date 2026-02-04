@@ -4,6 +4,7 @@
 #include <cassert>
 #include <fstream>
 #include <vector>
+#include <string.h>
 #include <verilated.h>
 #include <verilated_vcd_c.h>
 #include "Vcore.h"
@@ -23,7 +24,7 @@ uint32_t expected_results[] = {
     0x08000000, // [8]  SRLI (Logical Shift Right)
     0xF8000000, // [9]  SRAI (Arithmetic Shift Right - Sign preserved)
     0xFFFFFFFF, // [10] ADD (0x55555555 + 0xAAAAAAAA)
-    0xAAAAAAAA, // [11] SUB (0x55555555 - 0xAAAAAAAA)
+    0xAAAAAAAB, // [11] SUB (0x55555555 - 0xAAAAAAAA)
     0xFFFFFFFF, // [12] XOR
     0xFFFFFFFF, // [13] OR
     0x00000000, // [14] AND
@@ -50,9 +51,13 @@ int main(int argc, char** argv) {
     uint data_addr=0;
     int data_out=0;
     int data_we=0;
-    std::ifstream file("obj_dir/square.bin", std::ios::binary);
+    if(argc<=1){
+        printf("Specify program\n");
+        return 1;
+    }
+    std::ifstream file(argv[1], std::ios::binary);
     if(!file) {
-        printf("Failed to find binary file");
+        printf("Failed to find binary file %s\n", argv[1]);
         return 1;
     }
     unsigned char* main_memory = (unsigned char*)malloc(MEM_SIZE);
@@ -60,7 +65,7 @@ int main(int argc, char** argv) {
     file.close();
     core->instr_in = main_memory[3] << 24 | main_memory[2] << 16 | main_memory[1] << 8 | main_memory[0];
     core->data_in = main_memory[3] << 24 | main_memory[2] << 16 | main_memory[1] << 8 | main_memory[0];
-    for(int i = 1; i < 1000; i++) {
+    for(int i = 1; i < 1000000; i++) {
         int clk = i % 2;
         contextp->timeInc(1);
         if(clk==1){
@@ -98,11 +103,21 @@ int main(int argc, char** argv) {
         core->eval();
         m_trace->dump(i);
     }
-    uint32_t* result = (uint32_t*)&main_memory[TEST_RESULTS_BASE];
-    for(int i = 0; i < 23; i++) {
-        if(result[i] != expected_results[i]) {
-            printf("Test %i failed. %x != %x\n", i+1, result[i], expected_results[i]);
-        }
-    }
     m_trace->close();
+        if(strstr(argv[1], "stresstest")!=NULL) {
+        int failed = 0;
+        uint32_t* result = (uint32_t*)&main_memory[TEST_RESULTS_BASE];
+        for(int i = 0; i < 23; i++) {
+            if(result[i] != expected_results[i]) {
+                printf("Test %i failed. %x != %x\n", i+1, result[i], expected_results[i]);
+                failed++;
+            }
+        }
+        if(failed==0) {
+            printf("\033[32m");
+        } else {
+            printf("\033[31m");
+        }
+        printf("=== %i/23 core tests passed ===\033[0m\n", 23-failed);
+    }
 }
