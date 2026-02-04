@@ -2,7 +2,7 @@ build: build-core build-alu
 
 build-core: processor/**.sv testbench/tb_core.cpp testbench/square.c testbench/linker.ld
 	verilator -Wall -cc processor/core/core.sv -y processor/core/ieu -y processor/core/ifu -y processor/core/mmu -exe testbench/tb_core.cpp --build --trace
-	clang -O3 --target=riscv32 -march=rv32i -mabi=ilp32 -ffreestanding -nostdlib -T testbench/linker.ld testbench/square.c -o obj_dir/square.elf
+	clang -O0 --target=riscv32 -march=rv32i -mabi=ilp32 -ffreestanding -nostdlib -T testbench/linker.ld testbench/entry.S testbench/square.c -o obj_dir/square.elf
 	llvm-objcopy -O binary --only-section=.text obj_dir/square.elf obj_dir/square.bin
 
 build-alu: processor/core/ieu/alu.sv testbench/tb_alu.cpp

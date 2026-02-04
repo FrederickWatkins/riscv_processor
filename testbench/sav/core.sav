@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.124 (w)1999-2025 BSI
-[*] Wed Feb  4 10:07:25 2026
+[*] Wed Feb  4 11:25:02 2026
 [*]
 [dumpfile] "/home/freddie/Developement/riscv_processor/obj_dir/core.vcd"
-[dumpfile_mtime] "Wed Feb  4 09:58:57 2026"
-[dumpfile_size] 271470
+[dumpfile_mtime] "Wed Feb  4 11:23:13 2026"
+[dumpfile_size] 257653
 [savefile] "/home/freddie/Developement/riscv_processor/testbench/sav/core.sav"
-[timestart] 424
+[timestart] 123
 [size] 1920 1001
 [pos] -27 -24
-*-2.900000 449 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-2.900000 158 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.core.
 [treeopen] TOP.core.ieu.
@@ -19,7 +19,7 @@
 [sst_vpaned_height] 297
 @28
 TOP.core.clk
-@800200
+@c00201
 -Core
 @22
 [color] 1
@@ -35,7 +35,6 @@ TOP.core.fetched_instr[29:0]
 TOP.core.ieu_passthrough
 @22
 TOP.core.ieu_reg[31:0]
-@23
 [color] 5
 TOP.core.ieu_result[31:0]
 @28
@@ -51,7 +50,7 @@ TOP.core.je
 TOP.core.rd_data[31:0]
 @28
 TOP.core.stall
-@1000200
+@1401201
 -Core
 @c00200
 -IEU
@@ -141,5 +140,41 @@ TOP.core.mmu.ieu_we
 TOP.core.mmu.rd_data[31:0]
 @1401200
 -MMU
+@c00200
+-Register File
+@22
+TOP.core.ieu.irf.ram[1][31:0]
+TOP.core.ieu.irf.ram[2][31:0]
+TOP.core.ieu.irf.ram[3][31:0]
+TOP.core.ieu.irf.ram[4][31:0]
+TOP.core.ieu.irf.ram[5][31:0]
+TOP.core.ieu.irf.ram[6][31:0]
+TOP.core.ieu.irf.ram[7][31:0]
+TOP.core.ieu.irf.ram[8][31:0]
+TOP.core.ieu.irf.ram[9][31:0]
+TOP.core.ieu.irf.ram[10][31:0]
+TOP.core.ieu.irf.ram[11][31:0]
+TOP.core.ieu.irf.ram[12][31:0]
+TOP.core.ieu.irf.ram[13][31:0]
+TOP.core.ieu.irf.ram[14][31:0]
+TOP.core.ieu.irf.ram[15][31:0]
+TOP.core.ieu.irf.ram[16][31:0]
+TOP.core.ieu.irf.ram[17][31:0]
+TOP.core.ieu.irf.ram[18][31:0]
+TOP.core.ieu.irf.ram[19][31:0]
+TOP.core.ieu.irf.ram[20][31:0]
+TOP.core.ieu.irf.ram[21][31:0]
+TOP.core.ieu.irf.ram[22][31:0]
+TOP.core.ieu.irf.ram[23][31:0]
+TOP.core.ieu.irf.ram[24][31:0]
+TOP.core.ieu.irf.ram[25][31:0]
+TOP.core.ieu.irf.ram[26][31:0]
+TOP.core.ieu.irf.ram[27][31:0]
+TOP.core.ieu.irf.ram[28][31:0]
+TOP.core.ieu.irf.ram[29][31:0]
+TOP.core.ieu.irf.ram[30][31:0]
+TOP.core.ieu.irf.ram[31][31:0]
+@1401200
+-Register File
 [pattern_trace] 1
 [pattern_trace] 0
