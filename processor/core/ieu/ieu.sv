@@ -20,8 +20,8 @@ module ieu #(
     output logic mm_we, // Write enable
     output logic passthrough // We want the data we sent out back
 );
-    logic rd_we[wb_delay:0], op1_pc, op2_imm, jump, branch;
-    logic [4:0] rs1_addr, rs2_addr, rd_addr[wb_delay:0];
+    logic rd_we[wb_delay:0], op1_pc, op2_imm, jump, branch, idu_rd_we;
+    logic [4:0] rs1_addr, rs2_addr, rd_addr[wb_delay:0], idu_rd;
     logic [XLEN-1:0] imm, rs1_data, rs2_data, operand_1, operand_2, alu_res;
     logic [2:0] funct3;
     logic [6:0] funct7;
@@ -41,11 +41,15 @@ module ieu #(
     end
 
     // RAW hazard
-    always @(*) begin
+    always_comb begin
         stall = 0;
+        rd_addr[0] = idu_rd;
+        rd_we[0] = idu_rd_we;
         for(integer i = 1; i <= wb_delay; i = i + 1) begin
             if((rd_addr[i] == rs1_addr | rd_addr[i] == rs2_addr) & rd_addr[i] != 0 & rd_we[i] == 1) begin
                 stall = 1;
+                rd_addr[0] = 0;
+                rd_we[0] = 0;
             end
         end
     end
@@ -56,8 +60,8 @@ module ieu #(
         .instr_in(instr),
         .imm,
         
-        .rd_we(rd_we[0]),
-        .rd(rd_addr[0]),
+        .rd_we(idu_rd_we),
+        .rd(idu_rd),
         .rs1(rs1_addr),
         .rs2(rs2_addr),
 

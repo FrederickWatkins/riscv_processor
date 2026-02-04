@@ -14,9 +14,9 @@ module pc #(
     output logic [XLEN-1:0] next_pc
 );
     assign inc_pc = curr_pc + (compressed?2:4);
-    assign next_pc = je?ja:inc_pc;
+    assign next_pc = stall?curr_pc:je?ja:inc_pc;
 
     always @(posedge clk) begin
-        if(!stall) curr_pc <= next_pc;
+        curr_pc <= next_pc;
     end
 endmodule

@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
         alu->operand_1 = op1;
         alu->operand_2 = op2;
         alu->funct3 = funct3;
-        alu->invert = invert;
+        alu->funct7 = invert?0b0100000:0b000000;
         alu->eval();
         return alu->result;
     };

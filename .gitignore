@@ -5,3 +5,6 @@
 *.sim
 obj_dir
 *.lib
+*.vcd
+*.elf
+*.bin

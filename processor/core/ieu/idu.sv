@@ -27,12 +27,12 @@ module idu #(
     output logic passthrough
 );
     // Opcodes
-    localparam LOAD = 'b00000;
-    localparam STORE = 'b01000;
+    localparam LOAD = 'b00000; // TODO fix lb and lh
+    localparam STORE = 'b01000;// TODO fix sb and sh
     localparam BRANCH = 'b11000;
     localparam JALR = 'b11001;
     localparam MISC_MEM = 'b00011;
-    localparam JAL = 'b01111;
+    localparam JAL = 'b11011;
     localparam OP_IMM = 'b00100;
     localparam OP = 'b01100;
     localparam SYSTEM = 'b11100;
@@ -52,8 +52,6 @@ module idu #(
     } instr_type;
 
     instr_type instr_fmt;
-    
-    assign funct3 = instr_in[14:12];
 
     always @(*) begin
         jump = 0;
@@ -83,7 +81,6 @@ module idu #(
         JALR: begin
             instr_fmt = I_TYPE;
             jump = 1;
-            op2_imm = 1;
             rd_we = 1;
             passthrough = 1;
         end
@@ -132,6 +129,7 @@ module idu #(
         rd = 0;
         rs1 = 0;
         rs2 = 0;
+        funct3 = instr_in[14:12];
         funct7 = 0;
         imm = 'x;
         case(instr_fmt)
@@ -154,6 +152,7 @@ module idu #(
         S_TYPE: begin
             rs1 = instr_in[19:15];
             rs2 = instr_in[24:20];
+            funct3 = 'b000;
             imm = {{(XLEN-11){instr_in[31]}}, instr_in[30:25], instr_in[11:7]};
         end
         B_TYPE: begin
@@ -163,10 +162,12 @@ module idu #(
         end
         U_TYPE: begin
             rd = instr_in[11:7];
+            funct3 = 'b000;
             imm = {{(XLEN-31){instr_in[31]}}, instr_in[30:12], {12{1'b0}}};
         end
         J_TYPE: begin
             rd = instr_in[11:7];
+            funct3 = 'b000;
             imm = {{(XLEN-20){instr_in[31]}}, instr_in[19:12], instr_in[20], instr_in[30:21], 1'b0};
         end
         endcase
