@@ -1,3 +1,4 @@
+TOP_MODULE?=core
 TEST_PROGRAM?=stresstest
 OPTIMISATION?=O0
 
