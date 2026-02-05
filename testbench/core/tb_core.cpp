@@ -52,6 +52,8 @@ int main(int argc, char** argv) {
     int data_out=0;
     int data_we=0;
     int data_stb=0;
+    int ack=0;
+    int prev_ack=0;
     unsigned char data_sel=0;
     if(argc<=1){
         printf("Specify program\n");
@@ -98,7 +100,9 @@ int main(int argc, char** argv) {
         core->clk = clk;
         core->eval();
         if(clk==1){
-            int ack = 0;
+            core->ACK = prev_ack;
+            prev_ack = ack;
+            ack = 0;
             core->instr_in = main_memory[instr_addr+3] << 24 | main_memory[instr_addr+2] << 16 | main_memory[instr_addr+1] << 8 | main_memory[instr_addr];
             if(data_stb & !data_we) {
                 if(data_addr >= MEM_SIZE) {
@@ -115,7 +119,6 @@ int main(int argc, char** argv) {
                 core->DAT_R =  data_in;
                 ack = 1;
             }
-            core->ACK = ack;
         }
         core->eval();
         m_trace->dump(i);

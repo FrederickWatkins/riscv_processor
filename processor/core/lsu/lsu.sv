@@ -10,6 +10,7 @@ module lsu #(
     input logic [XLEN-1:0] ieu_reg,
     input logic [XLEN-1:0] ieu_result,
 
+    output logic stalled,
     output logic [XLEN-1:0] rd_data,
 
     wishbone.MASTER mm_bus
@@ -23,14 +24,16 @@ module lsu #(
 
     assign mm_bus.ADR = ieu_result;
     
-    logic ieu_re_d;
+    logic stalled_d;
     logic [XLEN-1:0] ieu_result_d;
     logic [2:0] funct3_d;
 
     always @(posedge clk) begin
-        ieu_re_d <= ieu_re;
-        ieu_result_d <= ieu_result;
-        funct3_d <= funct3;
+        if(!stalled) begin
+            ieu_result_d <= ieu_result;
+            funct3_d <= funct3;
+        end
+        stalled_d <= stalled;
     end
 
     always @(*) begin
@@ -45,9 +48,13 @@ module lsu #(
         if(ieu_re) begin
             mm_bus.STB = 1;
         end
+        if(mm_bus.ACK) begin
+            mm_bus.STB = 0;
+        end
     end
 
     always @(*) begin
+        stalled = ieu_re;
         rd_data = ieu_result_d;
         casez(funct3)
         {1'b?, BYTE}: mm_bus.SEL = 'b0001;
@@ -55,7 +62,7 @@ module lsu #(
         {1'b?, WORD}: mm_bus.SEL = 'b1111;
         default: mm_bus.SEL ='x;
         endcase
-        if(ieu_re_d & mm_bus.ACK) begin // TODO implement stall for no ack
+        if(mm_bus.ACK) begin
             case(funct3_d)
             {SIGNED, BYTE}: rd_data = {{(XLEN-7){mm_bus.DAT_R[7]}}, mm_bus.DAT_R[6:0]};
             {SIGNED, HALF}: rd_data = {{(XLEN-15){mm_bus.DAT_R[15]}}, mm_bus.DAT_R[14:0]};
@@ -65,6 +72,7 @@ module lsu #(
             {UNSIGNED, WORD}: rd_data = {{(XLEN-32){1'b0}}, mm_bus.DAT_R[31:0]};
             default: rd_data = 'x;
             endcase
+            if(stalled_d) stalled = 0;
         end
     end
 

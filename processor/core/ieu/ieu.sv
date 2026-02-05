@@ -4,6 +4,7 @@ module ieu #(
     wb_delay = 1
 ) (
     input logic clk,
+    input logic stall, // Stall for this cycle
     input logic [31:2] instr,
     input logic [XLEN-1:0] curr_pc, // Current program counter
     input logic [XLEN-1:0] inc_pc, // Incremented program counter
@@ -11,7 +12,7 @@ module ieu #(
     input logic [XLEN-1:0] rd_data,
 
     // Signals to fetch unit
-    output logic stall, // Stall for this cycle
+    output logic stalled,
     output logic je, // Jump enable
     output logic [XLEN-1:0] ja,
     // Signals to MMU
@@ -32,24 +33,28 @@ module ieu #(
     assign reg_out = rs2_data;
     assign result = jump?inc_pc:alu_res;
     assign ja = alu_res;
-    assign mm_we = stall?0:idu_mm_we;
+    assign mm_we = stalled?0:idu_mm_we;
 
     // Return data delay line
     always @(posedge clk) begin
-        for(integer i = 0; i < wb_delay; i = i + 1) begin
+        for(integer i = 0; i < wb_delay & !stall; i = i + 1) begin
             rd_we[i+1] <= rd_we[i];
             rd_addr[i+1] <= rd_addr[i];
+        end
+        if(stall) begin
+            rd_we[1] <= 0;
+            rd_addr[1] <= 0;
         end
     end
 
     // RAW hazard
-    always_comb begin
-        stall = 0;
+    always @(*) begin
+        stalled = stall;
         rd_addr[0] = idu_rd;
         rd_we[0] = idu_rd_we;
         for(integer i = 1; i <= wb_delay; i = i + 1) begin
             if((rd_addr[i] == rs1_addr | rd_addr[i] == rs2_addr) & rd_addr[i] != 0 & rd_we[i] == 1) begin
-                stall = 1;
+                stalled = 1;
                 rd_addr[0] = 0;
                 rd_we[0] = 0;
             end

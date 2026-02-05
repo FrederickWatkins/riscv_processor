@@ -10,7 +10,7 @@ module core #(
     // Data port
     wishbone.MASTER mm_bus
 );
-    logic stall, je, ieu_we, ieu_re;
+    logic ieu_stall, lsu_stall, je, ieu_we, ieu_re;
     logic [29:0] fetched_instr;
     logic [XLEN-1:0] ja, curr_pc, inc_pc, ieu_result, ieu_reg, rd_data;
     logic [2:0] funct3;
@@ -19,7 +19,7 @@ module core #(
         .XLEN(XLEN)
     ) ifu (
         .clk,
-        .stall,
+        .stall(ieu_stall),
         .je,
         .ja,
         .instr_in,
@@ -38,8 +38,9 @@ module core #(
         .curr_pc,
         .inc_pc,
         .rd_data,
+        .stall(lsu_stall),
 
-        .stall,
+        .stalled(ieu_stall),
         .je,
         .ja,
         .funct3,
@@ -57,6 +58,7 @@ module core #(
         .ieu_re,
         .funct3,
         .ieu_reg,
+        .stalled(lsu_stall),
         .ieu_result,
         .rd_data,
         .mm_bus
