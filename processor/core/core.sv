@@ -5,26 +5,61 @@ module core #(
 ) (
     input logic clk,
     // Instruction port
-    output logic [XLEN-1:0] instr_addr,
-    input logic [31:0] instr_in,
+    wishbone.MASTER instr_bus
     // Data port
-    wishbone.MASTER mm_bus
+    wishbone.MASTER data_bus
 );
-    logic ieu_stall, lsu_stall, je, ieu_we, ieu_re;
-    logic [29:0] fetched_instr;
-    logic [XLEN-1:0] ja, curr_pc, inc_pc, ieu_result, ieu_reg, rd_data;
-    logic [2:0] funct3;
+    localparam pipeline_length = 4;
+
+    localparam NOP = 30'h4;
+
+    logic [31:2] instr [pipeline_length-1:0];
+    logic [XLEN-1:0] curr_pc [2:0];
+    logic [XLEN-1:0] inc_pc [2:0];
+    logic [XLEN-1:0] writeback_data;
+    logic stalled[pipeline_length-2:0]
+    logic stall[pipeline_length-1:0];
+
+    always @(*) begin
+        for (int i = pipeline_length - 1; i > 0; i -= 1) begin
+            stall[i - 1] = stalled[i - 1] | stall[i];
+        end
+    end
+
+    always @(posedge clk) begin
+        for (int i = 0; i < pipeline_length - 1; i += 1) begin
+            if(!stall[i]) begin
+                instr[i + 1] <= instr[i];
+                if(i == 0) instr[i] = NOP;
+                else if(stall[i - 1]) instr[i] = NOP;
+            end
+        end
+        curr_pc[2] <= curr_pc[1];
+        curr_pc[1] <= curr_pc[0];
+        inc_pc[2] <= inc_pc[2];
+        inc_pc[1] <= inc_pc[0];
+    end
+
+    hc #(
+        .XLEN(XLEN),
+        .pipeline_length(pipeline_length)
+    ) hc (
+        .instr,
+        .stall(stalled[1])
+    );
 
     ifu #(
         .XLEN(XLEN)
     ) ifu (
         .clk,
-        .stall(ieu_stall),
+        // Inputs
+        .stall(stall[0]),
         .je,
         .ja,
-        .instr_in,
-
-        .instr_out(fetched_instr),
+        .instr_bus,
+        // Ouputs
+        .stalled(stalled[0]),
+        .instr_out(instr[0]),
         .curr_pc,
         .inc_pc,
         .next_pc(instr_addr)
@@ -34,33 +69,31 @@ module core #(
         .XLEN(XLEN)
     ) ieu (
         .clk,
-        .instr(fetched_instr),
-        .curr_pc,
-        .inc_pc,
-        .rd_data,
-        .stall(lsu_stall),
-
-        .stalled(ieu_stall),
+        // Inputs
+        .stall_decode(stall[1]),
+        .decode_instr(instr[1]),
+        .curr_pc(curr_pc[2]),
+        .inc_pc(inc_pc[2]),
+        .writeback_instr(instr[3]),
+        .writeback_data,
+        // Outputs
         .je,
         .ja,
-        .funct3,
-        .result(ieu_result),
-        .reg_out(ieu_reg),
-        .mm_we(ieu_we),
-        .mm_re(ieu_re)
-    );
+    )
 
     lsu #(
         .XLEN(XLEN)
     ) lsu (
         .clk,
-        .ieu_we,
-        .ieu_re,
-        .funct3,
-        .ieu_reg,
-        .stalled(lsu_stall),
+        // Interfaces
+        wishbone.MASTER data_bus,
+        // Inputs
+        .instr(instr[3]),
         .ieu_result,
-        .rd_data,
-        .mm_bus
-    );
+        .ieu_rs2,
+        .stall(stall[3]),
+        // Outputs
+        .stalled(stalled[2]),
+        .writeback_data
+    )
 endmodule

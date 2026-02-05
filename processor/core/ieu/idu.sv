@@ -28,8 +28,8 @@ module idu #(
     output logic mm_re
 );
     // Opcodes
-    localparam LOAD = 'b00000; // TODO fix lb and lh
-    localparam STORE = 'b01000;// TODO fix sb and sh
+    localparam LOAD = 'b00000;
+    localparam STORE = 'b01000;
     localparam BRANCH = 'b11000;
     localparam JALR = 'b11001;
     localparam MISC_MEM = 'b00011;
