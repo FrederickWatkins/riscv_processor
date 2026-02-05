@@ -115,6 +115,6 @@ int main(int argc, char** argv) {
             }
         }
     }
-    std::cout << "=== All ALU tests passed ===" << std::endl;
+    std::cout << "\033[32m=== All ALU tests passed ===\033[31m" << std::endl;
     return 0;
 }

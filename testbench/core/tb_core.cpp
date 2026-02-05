@@ -51,6 +51,8 @@ int main(int argc, char** argv) {
     uint data_addr=0;
     int data_out=0;
     int data_we=0;
+    int data_stb=0;
+    unsigned char data_sel=0;
     if(argc<=1){
         printf("Specify program\n");
         return 1;
@@ -64,26 +66,27 @@ int main(int argc, char** argv) {
     file.read(reinterpret_cast<char*>(main_memory), MEM_SIZE);
     file.close();
     core->instr_in = main_memory[3] << 24 | main_memory[2] << 16 | main_memory[1] << 8 | main_memory[0];
-    core->data_in = main_memory[3] << 24 | main_memory[2] << 16 | main_memory[1] << 8 | main_memory[0];
     for(int i = 1; i < 1000000; i++) {
         int clk = i % 2;
         contextp->timeInc(1);
         if(clk==1){
             instr_addr = core->instr_addr;
-            data_addr = core->data_addr;
-            data_out = core->data_out;
-            data_we = core->data_we;
-            if(data_we){
+            data_addr = core->ADR;
+            data_out = core->DAT_W;
+            data_we = core->WE;
+            data_stb = core->STB;
+            data_sel = core->SEL;
+            if(data_we & data_stb){
                 if(data_addr >= MEM_SIZE) {
                     printf("Attempted to write out of bounds at address %x at instruction %x on cycle %u\n", data_addr, instr_addr, i);
                     m_trace->dump(i);
                     m_trace->close();
                     return 0;
                 }
-                main_memory[data_addr+3] = data_out >> 24;
-                main_memory[data_addr+2] = data_out >> 16;
-                main_memory[data_addr+1] = data_out >> 8;
-                main_memory[data_addr] = data_out;
+                if(data_sel & 1 << 3) main_memory[data_addr+3] = data_out >> 24;
+                if(data_sel & 1 << 2) main_memory[data_addr+2] = data_out >> 16;
+                if(data_sel & 1 << 1) main_memory[data_addr+1] = data_out >> 8;
+                if(data_sel & 1 << 0) main_memory[data_addr] = data_out;
             }
         }
         if(instr_addr >= MEM_SIZE) {
@@ -95,16 +98,30 @@ int main(int argc, char** argv) {
         core->clk = clk;
         core->eval();
         if(clk==1){
+            int ack = 0;
             core->instr_in = main_memory[instr_addr+3] << 24 | main_memory[instr_addr+2] << 16 | main_memory[instr_addr+1] << 8 | main_memory[instr_addr];
-            if(data_addr < MEM_SIZE) {
-                core->data_in = main_memory[data_addr+3] << 24 | main_memory[data_addr+2] << 16 | main_memory[data_addr+1] << 8 | main_memory[data_addr];
+            if(data_stb & !data_we) {
+                if(data_addr >= MEM_SIZE) {
+                    printf("Attempted to read out of bounds at address %x at instruction %x on cycle %u\n", data_addr, instr_addr, i);
+                    m_trace->dump(i);
+                    m_trace->close();
+                    return 0;
+                }
+                int data_in = 0;
+                if(data_sel & 1 << 3) data_in|=main_memory[data_addr+3] << 24;
+                if(data_sel & 1 << 2) data_in|=main_memory[data_addr+2] << 16;
+                if(data_sel & 1 << 1) data_in|=main_memory[data_addr+1] << 8;
+                if(data_sel & 1 << 0) data_in|=main_memory[data_addr];
+                core->DAT_R =  data_in;
+                ack = 1;
             }
+            core->ACK = ack;
         }
         core->eval();
         m_trace->dump(i);
     }
     m_trace->close();
-        if(strstr(argv[1], "stresstest")!=NULL) {
+    if(strstr(argv[1], "stresstest")!=NULL) {
         int failed = 0;
         uint32_t* result = (uint32_t*)&main_memory[TEST_RESULTS_BASE];
         for(int i = 0; i < 23; i++) {

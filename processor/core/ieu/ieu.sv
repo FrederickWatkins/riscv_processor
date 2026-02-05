@@ -15,15 +15,16 @@ module ieu #(
     output logic je, // Jump enable
     output logic [XLEN-1:0] ja,
     // Signals to MMU
+    output logic [2:0] funct3,
     output logic [XLEN-1:0] result,
     output logic [XLEN-1:0] reg_out, // Register bypass
     output logic mm_we, // Write enable
-    output logic passthrough // We want the data we sent out back
+    output logic mm_re // We want the data we sent out back
 );
     logic rd_we[wb_delay:0], op1_pc, op2_imm, jump, branch, idu_rd_we, idu_mm_we;
     logic [4:0] rs1_addr, rs2_addr, rd_addr[wb_delay:0], idu_rd;
     logic [XLEN-1:0] imm, rs1_data, rs2_data, operand_1, operand_2, alu_res;
-    logic [2:0] alu_funct3, funct3;
+    logic [2:0] alu_funct3;
     logic [6:0] funct7;
 
     assign operand_1 = op1_pc?curr_pc:rs1_data;
@@ -76,7 +77,7 @@ module ieu #(
         .branch,
 
         .mm_we(idu_mm_we),
-        .passthrough
+        .mm_re
     );
 
     irf #(

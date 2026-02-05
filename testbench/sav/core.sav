@@ -1,182 +1,44 @@
 [*]
 [*] GTKWave Analyzer v3.3.124 (w)1999-2025 BSI
-[*] Wed Feb  4 14:00:08 2026
+[*] Thu Feb  5 04:21:03 2026
 [*]
 [dumpfile] "/home/freddie/Developement/riscv_processor/obj_dir/core.vcd"
-[dumpfile_mtime] "Wed Feb  4 13:58:10 2026"
-[dumpfile_size] 11825503
+[dumpfile_mtime] "Thu Feb  5 04:19:59 2026"
+[dumpfile_size] 11149907
 [savefile] "/home/freddie/Developement/riscv_processor/testbench/sav/core.sav"
-[timestart] 4262
+[timestart] 1
 [size] 1920 1001
-[pos] -27 -24
-*-2.900000 4287 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] -1 -1
+*-2.900000 35 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
-[treeopen] TOP.core.
-[treeopen] TOP.core.ieu.
+[treeopen] TOP.core_shim.
 [sst_width] 268
 [signals_width] 182
 [sst_expanded] 1
 [sst_vpaned_height] 297
 @28
-TOP.core.clk
-@800200
--Core
+TOP.core_shim.core.clk
 @22
-[color] 1
-TOP.core.curr_pc[31:0]
-TOP.core.data_addr[31:0]
-TOP.core.data_in[31:0]
-@23
-[color] 7
-TOP.core.data_out[31:0]
+TOP.core_shim.core.curr_pc[31:0]
+TOP.core_shim.core.fetched_instr[29:0]
 @28
-TOP.core.data_we
+TOP.core_shim.core.funct3[2:0]
+TOP.core_shim.core.ieu_re
 @22
-TOP.core.fetched_instr[29:0]
+TOP.core_shim.core.ieu_reg[31:0]
+TOP.core_shim.core.ieu_result[31:0]
 @28
-TOP.core.ieu_passthrough
+TOP.core_shim.core.ieu_we
 @22
-TOP.core.ieu_reg[31:0]
-[color] 5
-TOP.core.ieu_result[31:0]
+TOP.core_shim.core.inc_pc[31:0]
+TOP.core_shim.core.instr_addr[31:0]
+TOP.core_shim.core.instr_in[31:0]
+TOP.core_shim.core.ja[31:0]
 @28
-TOP.core.ieu_we
+TOP.core_shim.core.je
 @22
-TOP.core.inc_pc[31:0]
-TOP.core.instr_addr[31:0]
-TOP.core.instr_in[31:0]
-TOP.core.ja[31:0]
+TOP.core_shim.core.rd_data[31:0]
 @28
-TOP.core.je
-@22
-TOP.core.rd_data[31:0]
-@28
-TOP.core.stall
-@1000200
--Core
-@c00200
--IEU
-@22
-TOP.core.ieu.alu_res[31:0]
-@28
-TOP.core.ieu.branch
-@22
-TOP.core.ieu.curr_pc[31:0]
-@28
-TOP.core.ieu.funct3[2:0]
-@22
-TOP.core.ieu.funct7[6:0]
-TOP.core.ieu.idu_rd[4:0]
-@28
-TOP.core.ieu.idu_rd_we
-@22
-TOP.core.ieu.imm[31:0]
-TOP.core.ieu.inc_pc[31:0]
-TOP.core.ieu.instr[31:2]
-TOP.core.ieu.ja[31:0]
-@28
-TOP.core.ieu.je
-TOP.core.ieu.jump
-TOP.core.ieu.mm_we
-TOP.core.ieu.op1_pc
-TOP.core.ieu.op2_imm
-@22
-TOP.core.ieu.operand_1[31:0]
-TOP.core.ieu.operand_2[31:0]
-@28
-TOP.core.ieu.passthrough
-@22
-TOP.core.ieu.rd_addr[0][4:0]
-TOP.core.ieu.rd_addr[1][4:0]
-TOP.core.ieu.rd_data[31:0]
-@28
-#{TOP.core.ieu.rd_we[0:1]} TOP.core.ieu.rd_we[0] TOP.core.ieu.rd_we[1]
-@22
-TOP.core.ieu.reg_out[31:0]
-TOP.core.ieu.result[31:0]
-TOP.core.ieu.rs1_addr[4:0]
-TOP.core.ieu.rs1_data[31:0]
-TOP.core.ieu.rs2_addr[4:0]
-TOP.core.ieu.rs2_data[31:0]
-@28
-TOP.core.ieu.stall
-@22
-TOP.core.ieu.wb_delay[31:0]
-@1401200
--IEU
-@c00200
--IFU
-@28
-TOP.core.ifu.compressed
-@22
-TOP.core.ifu.curr_pc[31:0]
-TOP.core.ifu.inc_pc[31:0]
-TOP.core.ifu.instr_in[31:0]
-TOP.core.ifu.instr_out[31:2]
-TOP.core.ifu.ja[31:0]
-@28
-TOP.core.ifu.je
-@22
-TOP.core.ifu.next_pc[31:0]
-@28
-TOP.core.ifu.stall
-@1401200
--IFU
-@c00200
--MMU
-@22
-TOP.core.mmu.data_addr[31:0]
-TOP.core.mmu.data_in[31:0]
-TOP.core.mmu.data_out[31:0]
-@28
-TOP.core.mmu.data_we
-TOP.core.mmu.ieu_passthrough
-TOP.core.mmu.ieu_passthrough_d
-@22
-TOP.core.mmu.ieu_reg[31:0]
-TOP.core.mmu.ieu_result[31:0]
-TOP.core.mmu.ieu_result_d[31:0]
-@28
-TOP.core.mmu.ieu_we
-@22
-TOP.core.mmu.rd_data[31:0]
-@1401200
--MMU
-@c00200
--Register File
-@22
-TOP.core.ieu.irf.ram[1][31:0]
-TOP.core.ieu.irf.ram[2][31:0]
-TOP.core.ieu.irf.ram[3][31:0]
-TOP.core.ieu.irf.ram[4][31:0]
-TOP.core.ieu.irf.ram[5][31:0]
-TOP.core.ieu.irf.ram[6][31:0]
-TOP.core.ieu.irf.ram[7][31:0]
-TOP.core.ieu.irf.ram[8][31:0]
-TOP.core.ieu.irf.ram[9][31:0]
-TOP.core.ieu.irf.ram[10][31:0]
-TOP.core.ieu.irf.ram[11][31:0]
-TOP.core.ieu.irf.ram[12][31:0]
-TOP.core.ieu.irf.ram[13][31:0]
-TOP.core.ieu.irf.ram[14][31:0]
-TOP.core.ieu.irf.ram[15][31:0]
-TOP.core.ieu.irf.ram[16][31:0]
-TOP.core.ieu.irf.ram[17][31:0]
-TOP.core.ieu.irf.ram[18][31:0]
-TOP.core.ieu.irf.ram[19][31:0]
-TOP.core.ieu.irf.ram[20][31:0]
-TOP.core.ieu.irf.ram[21][31:0]
-TOP.core.ieu.irf.ram[22][31:0]
-TOP.core.ieu.irf.ram[23][31:0]
-TOP.core.ieu.irf.ram[24][31:0]
-TOP.core.ieu.irf.ram[25][31:0]
-TOP.core.ieu.irf.ram[26][31:0]
-TOP.core.ieu.irf.ram[27][31:0]
-TOP.core.ieu.irf.ram[28][31:0]
-TOP.core.ieu.irf.ram[29][31:0]
-TOP.core.ieu.irf.ram[30][31:0]
-TOP.core.ieu.irf.ram[31][31:0]
-@1401200
--Register File
+TOP.core_shim.core.stall
 [pattern_trace] 1
 [pattern_trace] 0

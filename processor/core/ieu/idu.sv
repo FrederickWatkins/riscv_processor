@@ -25,7 +25,7 @@ module idu #(
 
     // Main memory control
     output logic mm_we,
-    output logic passthrough
+    output logic mm_re
 );
     // Opcodes
     localparam LOAD = 'b00000; // TODO fix lb and lh
@@ -62,13 +62,14 @@ module idu #(
         op2_imm = 0;
         mm_we = 0;
         rd_we = 0;
-        passthrough = 0;
+        mm_re = 0;
         alu_funct3 = funct3;
         case(opcode)
         LOAD: begin
             instr_fmt = I_TYPE;
             op2_imm = 1;
             rd_we = 1;
+            mm_re = 1;
             alu_funct3 = 'b000; // Use alu to add addresses
         end
         STORE: begin
@@ -89,7 +90,6 @@ module idu #(
             jump = 1;
             op2_imm = 1;
             rd_we = 1;
-            passthrough = 1;
             alu_funct3 = 'b000; // Use alu to add addresses
         end
         MISC_MEM: instr_fmt = R_TYPE; // Do nothing, no cache and in-order
@@ -99,19 +99,16 @@ module idu #(
             op1_pc = 1;
             op2_imm = 1;
             rd_we = 1;
-            passthrough = 1;
             alu_funct3 = 'b000; // Use alu to add addresses
         end
         OP_IMM: begin
             instr_fmt = I_TYPE;
             op2_imm = 1;
             rd_we = 1;
-            passthrough = 1;
         end
         OP: begin
             instr_fmt = R_TYPE;
             rd_we = 1;
-            passthrough = 1;
         end
         SYSTEM: instr_fmt = I_TYPE; // Do nothing, no breakpoint support
         AUIPC: begin
@@ -119,14 +116,12 @@ module idu #(
             op1_pc = 1;
             op2_imm = 1;
             rd_we = 1;
-            passthrough = 1;
             alu_funct3 = 'b000; // Use alu to add addresses
         end
         LUI: begin
             instr_fmt = U_TYPE;
             op2_imm = 1;
             rd_we = 1;
-            passthrough = 1;
             alu_funct3 = 'b000; // Use alu to add addresses
         end
         default: begin

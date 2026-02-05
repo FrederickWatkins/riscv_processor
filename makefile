@@ -3,8 +3,8 @@ OPTIMISATION?=O0
 
 build: build-core build-alu
 
-build-core: processor/**.sv testbench/core/tb_core.cpp testbench/core/$(TEST_PROGRAM).c testbench/linker.ld
-	verilator -Wall -cc processor/core/core.sv -y processor/core/ieu -y processor/core/ifu -y processor/core/mmu -exe testbench/core/tb_core.cpp --build --trace
+build-core: processor/**.sv testbench/core/tb_core.cpp testbench/core/core_shim.sv testbench/core/$(TEST_PROGRAM).c testbench/linker.ld
+	verilator -Wall -cc processor/core/core.sv testbench/core/core_shim.sv -y processor/core/ieu -y processor/core/ifu -y processor/core/lsu -exe testbench/core/tb_core.cpp --build --trace
 	clang -w -$(OPTIMISATION) --target=riscv32 -march=rv32i -mabi=ilp32 -ffreestanding -nostdlib -T testbench/linker.ld testbench/entry.S testbench/core/$(TEST_PROGRAM).c -o obj_dir/$(TEST_PROGRAM).elf
 	llvm-objcopy -O binary --only-section=.text obj_dir/$(TEST_PROGRAM).elf obj_dir/$(TEST_PROGRAM).bin
 

@@ -8,14 +8,12 @@ module core #(
     output logic [XLEN-1:0] instr_addr,
     input logic [31:0] instr_in,
     // Data port
-    output logic data_we,
-    output logic [XLEN-1:0] data_addr,
-    output logic [XLEN-1:0] data_out,
-    input logic [XLEN-1:0] data_in
+    wishbone.MASTER mm_bus
 );
-    logic stall, je, ieu_we, ieu_passthrough;
+    logic stall, je, ieu_we, ieu_re;
     logic [29:0] fetched_instr;
     logic [XLEN-1:0] ja, curr_pc, inc_pc, ieu_result, ieu_reg, rd_data;
+    logic [2:0] funct3;
 
     ifu #(
         .XLEN(XLEN)
@@ -44,24 +42,23 @@ module core #(
         .stall,
         .je,
         .ja,
+        .funct3,
         .result(ieu_result),
         .reg_out(ieu_reg),
         .mm_we(ieu_we),
-        .passthrough(ieu_passthrough)
+        .mm_re(ieu_re)
     );
 
-    mmu #(
+    lsu #(
         .XLEN(XLEN)
-    ) mmu (
+    ) lsu (
         .clk,
         .ieu_we,
-        .ieu_passthrough,
+        .ieu_re,
+        .funct3,
         .ieu_reg,
         .ieu_result,
-        .data_in,
-        .data_we,
-        .data_addr,
-        .data_out,
-        .rd_data
+        .rd_data,
+        .mm_bus
     );
 endmodule
