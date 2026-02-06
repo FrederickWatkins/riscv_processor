@@ -1,15 +1,15 @@
-<img width="602" height="398" alt="output-onlinepngtools" src="https://github.com/user-attachments/assets/7b765bcb-ba90-423b-a4c0-b9209a1f6bad" />
+<img width="1150" height="821" alt="Screenshot From 2026-02-06 15-31-48" src="https://github.com/user-attachments/assets/7ade2c44-4c6d-4613-9deb-cf7af50e2c0e" />
 
 ## Plan
+
 - Implement RV32IMC and test working with basic programs
 - Add memory mapped VGA buffer (vgalib drwonky) and test with more complex programs (verilator)
 - Add memory mapped keyboard passthrough and continue testing
 - Port to RV64IMC
 - Add F/D
-- Pipeline (maybe 4 or 5 stage - work out details)
 
 After this point gets much harder:
-- Add Zifencei (just stick a big bubble after each fence instruction)
+- Add Zifencei
 - Add A (atomics)
 - Add Zicsr (this ones gonna suck)
 
