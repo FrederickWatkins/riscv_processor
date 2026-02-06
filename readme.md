@@ -1,23 +1,26 @@
-<img width="1150" height="821" alt="Screenshot From 2026-02-06 15-31-48" src="https://github.com/user-attachments/assets/7ade2c44-4c6d-4613-9deb-cf7af50e2c0e" />
+<img width="838" height="596" alt="Screenshot From 2026-02-06 16-15-09" src="https://github.com/user-attachments/assets/c3c7c470-81b7-4a66-94b1-ccd7dfe37af3" />
 
-## Plan
+## CPU Cores
+- Possibly heterogeneous, pipelined in-order E cores with lower clock speed, OoO P cores with higher clock speed. Each core has a separate clock, PMA and PMP unit, and cache, with the cache on the same clock as the core.
 
-- Implement RV32IMC and test working with basic programs
-- Add memory mapped VGA buffer (vgalib drwonky) and test with more complex programs (verilator)
-- Add memory mapped keyboard passthrough and continue testing
-- Port to RV64IMC
-- Add F/D
+## GPU
+- To start with, use software rendering on the CPU, write to the main memory and give controller the offset of the buffer.
+- Base on Vortex RISCV GPGPU architecture, implement the bare minimum to write to a 13h VGA frame buffer stored in video cache. A separate SPI interface will DMA into the video cache and display the buffer not actively being written to to the LCD screen. Could instead use DAC and actual VGA. Write colour palette to memory mapped config regs. Maybe use tinydrm library to write kernel driver. Video data cache is large enough to hold two 64kb 13h buffers + some extra data.
 
-After this point gets much harder:
-- Add Zifencei
-- Add A (atomics)
-- Add Zicsr (this ones gonna suck)
+## Buses
+- All AXI4, main memory decoder separates flash, main memory and peripherals.
 
-At this point we've reached RV64GC so can run standard code, but still need privileged architecture to do anything more complicated. Past this point gets REALLY hard:
-- Privileged modes
-- MMU (and probably TLB, need to add satp to zicsr)
-- Add CSRs (hard to find source of exactly which are required)
-- Memory mapped regs (mtime + others)
-- Memory mapped peripherals (SDHCI-SDMA, maybe through AXI-Lite but probably directly memory mapped)
-- Configure software - on chip boot rom, uboot spl, uboot proper, kernel
+## Main memory
+- Use behavioural verilog for simulation. If get to actually implement on fpga 
 
+## Interrupts
+- Use RISCV PLIC, or if not well supported by software, intel PIC. Memory map control table on peripheral bus. GPU also needs to be able to trigger CPU interrupts.
+
+## Peripherals
+- Maybe implement SDHCI in RTL since fairly simple, probably use IP for USB, timing is hard.
+
+## Clock domains
+- One clock domain for each core + cache
+- One clock domain for main bus + ddr controller
+- Peripheral bus and peripherals probably need to be on lower clock speed than main bus, but combine if possible
+- Video cache and GPU on high clock, video bridge probably needs to be on slower clock so cache controller will need to have lower frequency port
