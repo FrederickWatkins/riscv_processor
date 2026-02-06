@@ -57,6 +57,12 @@ The final 64 addresses are reserved for vectors if I choose to add them
 
 Each execution unit has its own decoder and arbiter to select the reservation station (attached to each operation unit), and the execution units are unique and mutually exclusive so no arbitration is necessary in the front end. May need a separate execution unit for zicsr, and could add one for vectors
 
+## Common data bus
+
+typedef packed struct cdb {logic [XLEN-1:0] data, logic [7:0] addr}; // Will actually be an interface
+
+There are 12 64 bit wide common data buses, 8 of which have register files as producers and reservation stations as consumers (the first 4 will also be linked to the floating point register file, which will have priority, and all 8 will be linked to the vector register file for an effective 512 bit wide bus if implemented). Each requester port on the reservation station will take in an array of 12 cdb consumer modports, and a grant signal, and will output a request signal along with a request domain (the first three bits of the addr corresponding to which register bank), and an address, to be all ones if grant is low, and the actual address if grant is high. These addresses will be anded together in a tree like structure up to the actual register bank, once they've been separated into domains.
+
 ## Pipeline lengths
 
 <table style="text-align: center;">
