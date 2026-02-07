@@ -23,6 +23,7 @@ interface wishbone #(
         input SEL,
         input WE,
         input STB,
+        input CYC,
         input DAT_W,
         output DAT_R,
         output ACK

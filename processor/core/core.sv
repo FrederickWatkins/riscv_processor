@@ -17,11 +17,12 @@ module core #(
     logic [XLEN-1:0] curr_pc [2:0];
     logic [XLEN-1:0] inc_pc [pipeline_length-1:0];
     logic [XLEN-1:0] rs1_data[pipeline_length-1:2], rs2_data[pipeline_length-1:2], ieu_result[pipeline_length-1:2], lsu_data;
-    logic stalled[pipeline_length-2:0];
+    logic stalled[pipeline_length-1:0];
     logic stall[pipeline_length-1:0];
     logic je, jack;
 
     always @(*) begin
+        stall[pipeline_length-1] = stalled[pipeline_length-1];
         for (int i = pipeline_length - 1; i > 0; i -= 1) begin
             stall[i - 1] = stalled[i - 1] | stall[i];
         end
@@ -32,7 +33,7 @@ module core #(
             if(!stall[i]) begin
                 instr[i + 1] <= instr[i];
                 inc_pc[i + 1] <= inc_pc[i];
-                if(stall[i - 1]) instr[i] = NOP;
+                if(stall[i - 1]) instr[i] <= NOP;
             end
         end
         curr_pc[2] <= curr_pc[1];
@@ -40,7 +41,6 @@ module core #(
     end
 
     hc #(
-        .XLEN(XLEN),
         .pipeline_length(pipeline_length)
     ) hc (
         .instr,
@@ -56,6 +56,7 @@ module core #(
         .rd_instr(instr[3]),
         .ieu_result(ieu_result[3]),
         .lsu_data,
+        .inc_pc(inc_pc[3]),
         // Outputs
         .rs1_data(rs1_data[2]),
         .rs2_data(rs2_data[2])
@@ -115,9 +116,8 @@ module core #(
         .instr(instr[3]),
         .ieu_result(ieu_result[3]),
         .rs2_data(rs2_data[3]),
-        .stall(stall[3]),
         // Outputs
-        .stalled(stalled[2]),
+        .stalled(stalled[3]),
         .data(lsu_data)
     );
 endmodule

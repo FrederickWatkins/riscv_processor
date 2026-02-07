@@ -10,10 +10,6 @@ module jbu #(
     output logic jack,
     output logic je
 );
-    localparam BRANCH = 'b11000;
-    localparam JALR = 'b11001;
-    localparam JAL = 'b11011;
-
     localparam BEQ = 3'b000;
     localparam BNE = 3'b001;
     localparam BLT = 3'b100;
@@ -22,7 +18,7 @@ module jbu #(
     localparam BGEU = 3'b111;
 
     logic [4:0] opcode = instr[6:2];
-    logic [2:0] funct3 = instr[14:12]
+    logic [2:0] funct3 = instr[14:12];
 
     always @(*) begin
         jack = 0;

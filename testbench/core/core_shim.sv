@@ -4,33 +4,52 @@ module core_shim #(
 ) (
     input logic clk,
     // Instruction port
-    output logic [XLEN-1:0] instr_addr,
-    input logic [31:0] instr_in,
+    output logic [XLEN-1:0] INSTR_ADR,
+    output logic [XLEN/8-1:0] INSTR_SEL,
+    output logic INSTR_WE,
+    output logic INSTR_STB,
+    output logic INSTR_CYC,
+    output logic [XLEN-1:0] INSTR_DAT_W,
+    input logic [XLEN-1:0] INSTR_DAT_R,
+    input logic INSTR_ACK,
     // Data port
-    output logic [XLEN-1:0] ADR,
-    output logic [XLEN/8-1:0] SEL,
-    output logic WE,
-    output logic STB,
-    output logic [XLEN-1:0] DAT_W,
-    input logic [XLEN-1:0] DAT_R,
-    input logic ACK
+    output logic [XLEN-1:0] DATA_ADR,
+    output logic [XLEN/8-1:0] DATA_SEL,
+    output logic DATA_WE,
+    output logic DATA_STB,
+    output logic DATA_CYC,
+    output logic [XLEN-1:0] DATA_DAT_W,
+    input logic [XLEN-1:0] DATA_DAT_R,
+    input logic DATA_ACK
 );
-    wishbone #(.XLEN(XLEN)) mm_bus();
+    wishbone #(.XLEN(XLEN)) instr_bus();
 
-    assign ADR = mm_bus.ADR;
-    assign SEL = mm_bus.SEL;
-    assign WE = mm_bus.WE;
-    assign STB = mm_bus.STB;
-    assign DAT_W = mm_bus.DAT_W;
-    assign mm_bus.DAT_R = DAT_R;
-    assign mm_bus.ACK = ACK;
+    wishbone #(.XLEN(XLEN)) data_bus();
+
+    assign INSTR_ADR = instr_bus.ADR;
+    assign INSTR_SEL = instr_bus.SEL;
+    assign INSTR_WE = instr_bus.WE;
+    assign INSTR_STB = instr_bus.STB;
+    assign INSTR_CYC = instr_bus.CYC;
+    assign INSTR_DAT_W = instr_bus.DAT_W;
+    assign instr_bus.DAT_R = INSTR_DAT_R;
+    assign instr_bus.ACK = INSTR_ACK;
+
+    assign DATA_ADR = data_bus.ADR;
+    assign DATA_SEL = data_bus.SEL;
+    assign DATA_WE = data_bus.WE;
+    assign DATA_STB = data_bus.STB;
+    assign DATA_CYC = data_bus.CYC;
+    assign DATA_DAT_W = data_bus.DAT_W;
+    assign data_bus.DAT_R = DATA_DAT_R;
+    assign data_bus.ACK = DATA_ACK;
 
     core #(
         .XLEN(XLEN)
     ) core (
         .clk,
-        .instr_addr,
-        .instr_in,
-        .mm_bus(mm_bus.MASTER)
+
+        .instr_bus(instr_bus.MASTER),
+        .data_bus(data_bus.MASTER)
     );
 endmodule

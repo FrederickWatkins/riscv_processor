@@ -12,19 +12,6 @@ module idu #(
     output logic op1_pc,
     output logic op2_imm
 );
-    // Opcodes
-    localparam LOAD = 'b00000;
-    localparam STORE = 'b01000;
-    localparam BRANCH = 'b11000;
-    localparam JALR = 'b11001;
-    localparam MISC_MEM = 'b00011;
-    localparam JAL = 'b11011;
-    localparam OP_IMM = 'b00100;
-    localparam OP = 'b01100;
-    localparam SYSTEM = 'b11100;
-    localparam AUIPC = 'b00101;
-    localparam LUI = 'b01101;
-
     logic [4:0] opcode = instr[6:2];
 
     always @(*) begin

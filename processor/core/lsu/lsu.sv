@@ -9,7 +9,6 @@ module lsu #(
     input logic [31:2] instr,
     input logic [XLEN-1:0] ieu_result,
     input logic [XLEN-1:0] rs2_data,
-    input logic stall,
     // Outputs
     output logic stalled,
     output logic [XLEN-1:0] data
@@ -20,9 +19,6 @@ module lsu #(
         READ,
         WRITE
     } state;
-
-    localparam LOAD = 5'b00000;
-    localparam STORE = 5'b01000;
     
     localparam BYTE = 2'b00;
     localparam HALF = 2'b01;
@@ -34,9 +30,10 @@ module lsu #(
     state curr_state;
     state next_state;
 
-    logic funct3 [2:0] = instr[14:12];
+    logic [2:0] funct3 = instr[14:12];
 
     assign data_bus.ADR = ieu_result;
+    assign data_bus.DAT_W = rs2_data;
     
     always @(*) begin
         next_state = curr_state;
@@ -88,15 +85,16 @@ module lsu #(
             data = 'x;
             data_bus.WE = 1;
             data_bus.STB = 1;
-            data.CYC = 1;
+            data_bus.CYC = 1;
             if(data_bus.ACK) begin
                 next_state = IDLE;
                 stalled = 0;
                 data_bus.WE = 0;
                 data_bus.STB = 0;
-                data.CYC = 0;
+                data_bus.CYC = 0;
             end
         end
+        default: ;
         endcase
     end
 
