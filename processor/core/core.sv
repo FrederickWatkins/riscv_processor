@@ -13,8 +13,9 @@ module core #(
 
     localparam NOP = 30'h4;
 
-    logic [31:2] instr [pipeline_length-1:0];
-    logic [XLEN-1:0] curr_pc [2:0];
+
+    logic [31:2] instr [pipeline_length-1:1], fetched_instr;
+    logic [XLEN-1:0] curr_pc [pipeline_length-1:0];
     logic [XLEN-1:0] inc_pc [pipeline_length-1:0];
     logic [XLEN-1:0] rs1_data[pipeline_length-1:2], rs2_data[pipeline_length-1:2], ieu_result[pipeline_length-1:2], lsu_data;
     logic stalled[pipeline_length-1:0];
@@ -23,27 +24,27 @@ module core #(
 
     always @(*) begin
         stall[pipeline_length-1] = stalled[pipeline_length-1];
-        for (int i = pipeline_length - 1; i > 0; i -= 1) begin
+        for (int i = pipeline_length - 1; i > 0; i = i - 1) begin
             stall[i - 1] = stalled[i - 1] | stall[i];
         end
     end
 
     always @(posedge clk) begin
-        for (int i = 0; i < pipeline_length - 1; i += 1) begin
+        instr[1] <= fetched_instr;
+        for (int i = 2; i < pipeline_length; i += 1) begin
             if(!stall[i]) begin
-                instr[i + 1] <= instr[i];
-                inc_pc[i + 1] <= inc_pc[i];
-                if(stall[i - 1]) instr[i] <= NOP;
+                instr[i] <= instr[i - 1];
+                inc_pc[i] <= inc_pc[i - 1];
+                curr_pc[i] <= curr_pc[i - 1];
             end
+            if(stall[i]) instr[i] <= NOP;
         end
-        curr_pc[2] <= curr_pc[1];
-        curr_pc[1] <= curr_pc[0];
     end
 
     hc #(
         .pipeline_length(pipeline_length)
     ) hc (
-        .instr,
+        .instr(instr[3:1]),
         .stall(stalled[1])
     );
 
@@ -74,7 +75,7 @@ module core #(
         .instr_bus,
         // Ouputs
         .stalled(stalled[0]),
-        .instr_out(instr[0]),
+        .instr_out(fetched_instr),
         .curr_pc(curr_pc[0]),
         .inc_pc(inc_pc[0])
     );

@@ -38,6 +38,86 @@ uint32_t expected_results[] = {
     0xDEADBEEF  // [22] Final Success Marker
 };
 
+class WishboneSlave {
+    public: 
+        WishboneSlave(uint8_t* memory, unsigned int memory_size, int delay, int* curr_cycle, uint32_t* ADR,
+                      uint8_t* SEL, unsigned char* WE, unsigned char* STB, unsigned char* CYC, uint32_t* DAT_W, uint32_t* DAT_R,
+                      unsigned char* ACK){
+            this->memory = memory;
+            this->memory_size = memory_size;
+            this->delay = delay;
+            this->last_handshake = -delay - 1;
+            this->handshake_active = false;
+            this->curr_cycle = curr_cycle;
+            this->ADR = ADR;
+            this->SEL = SEL;
+            this->WE = WE;
+            this->STB = STB;
+            this->CYC = CYC;
+            this->DAT_W = DAT_W;
+            this->DAT_R = DAT_R;
+            this->ACK = ACK;
+        }
+        void read_from_port() {
+            if(*STB && *CYC && *WE) {
+                if(*ADR >= memory_size - 4) {
+                    printf("DUT attempted to write out of bounds on cycle %x at ADR %x\n", *curr_cycle, *ADR);
+                }
+                for(int i = 0; i < 4; i++) {
+                    if((*SEL >> i) & 1) {
+                        memory[*ADR + i] = (*DAT_W>>8) & 0xFF;
+                    }
+                }
+                if(!handshake_active) {
+                    last_handshake = *curr_cycle;
+                    handshake_active = true;
+                }
+            }
+        }
+        void write_to_port() {
+            if(*STB && *CYC && !*WE) {
+                if(*ADR >= memory_size - 4) {
+                    printf("DUT attempted to read out of bounds on cycle %x at ADR %x\n", *curr_cycle, *ADR);
+                }
+                if(!handshake_active) {
+                    last_handshake = *curr_cycle;
+                    handshake_active = true;
+                }
+            }
+            if(handshake_active && *curr_cycle - last_handshake >= delay) {
+                *DAT_R = 0;
+                for(int i = 0; i < 4; i++) {
+                    if((*SEL >> i) & 1) {
+                        *DAT_R |= (uint32_t)memory[*ADR + i] << (i * 8);
+                        if(*ADR == 4) printf("%x\n", *DAT_R);
+                    }
+                }
+                *ACK = 1;
+                handshake_active = false;
+            } else {
+                *ACK = 0;
+            }
+        }
+    private:
+        // Config
+        uint8_t* memory;
+        unsigned int memory_size;
+        int delay;
+        int last_handshake;
+        bool handshake_active;
+        int* curr_cycle;
+        // Wishbone outputs
+        uint32_t* ADR;
+        uint8_t* SEL;
+        unsigned char* WE;
+        unsigned char* STB;
+        unsigned char* CYC;
+        uint32_t* DAT_W;
+        // Wishbone inputs
+        uint32_t* DAT_R;
+        unsigned char* ACK;
+};
+
 int main(int argc, char** argv) {
 	VerilatedVcdC *m_trace = new VerilatedVcdC;
 
@@ -47,14 +127,7 @@ int main(int argc, char** argv) {
     Vcore* core = new Vcore{contextp};
     core->trace(m_trace, 99);
     m_trace->open("obj_dir/core.vcd");
-    uint instr_addr=0;
-    uint data_addr=0;
-    int data_out=0;
-    int data_we=0;
-    int data_stb=0;
-    int ack=0;
-    int prev_ack=0;
-    unsigned char data_sel=0;
+
     if(argc<=1){
         printf("Specify program\n");
         return 1;
@@ -64,65 +137,39 @@ int main(int argc, char** argv) {
         printf("Failed to find binary file %s\n", argv[1]);
         return 1;
     }
-    unsigned char* main_memory = (unsigned char*)malloc(MEM_SIZE);
+    uint8_t* main_memory = (uint8_t*)malloc(MEM_SIZE);
     file.read(reinterpret_cast<char*>(main_memory), MEM_SIZE);
     file.close();
-    core->instr_in = main_memory[3] << 24 | main_memory[2] << 16 | main_memory[1] << 8 | main_memory[0];
-    for(int i = 1; i < 1000000; i++) {
-        int clk = i % 2;
+    int curr_cycle = 0;
+
+    WishboneSlave instr_port = WishboneSlave(
+        main_memory, MEM_SIZE, 1, &curr_cycle, &core->INSTR_ADR, &core->INSTR_SEL, &core->INSTR_WE,
+        &core->INSTR_STB, &core->INSTR_CYC, &core->INSTR_DAT_W, &core->INSTR_DAT_R, &core->INSTR_ACK
+    );
+
+    WishboneSlave data_port = WishboneSlave(
+        main_memory, MEM_SIZE, 1, &curr_cycle, &core->DATA_ADR, &core->DATA_SEL, &core->DATA_WE,
+        &core->DATA_STB, &core->DATA_CYC, &core->DATA_DAT_W, &core->DATA_DAT_R, &core->DATA_ACK
+    );
+
+    int clk;
+    for(curr_cycle = 0; curr_cycle < 1000; curr_cycle++) {
+        clk = curr_cycle % 2;
         contextp->timeInc(1);
-        if(clk==1){
-            instr_addr = core->instr_addr;
-            data_addr = core->ADR;
-            data_out = core->DAT_W;
-            data_we = core->WE;
-            data_stb = core->STB;
-            data_sel = core->SEL;
-            if(data_we & data_stb){
-                if(data_addr >= MEM_SIZE) {
-                    printf("Attempted to write out of bounds at address %x at instruction %x on cycle %u\n", data_addr, instr_addr, i);
-                    m_trace->dump(i);
-                    m_trace->close();
-                    return 0;
-                }
-                if(data_sel & 1 << 3) main_memory[data_addr+3] = data_out >> 24;
-                if(data_sel & 1 << 2) main_memory[data_addr+2] = data_out >> 16;
-                if(data_sel & 1 << 1) main_memory[data_addr+1] = data_out >> 8;
-                if(data_sel & 1 << 0) main_memory[data_addr] = data_out;
-            }
-        }
-        if(instr_addr >= MEM_SIZE) {
-            printf("Instruction pointer out of bounds at %x on cycle %u\n", instr_addr, i);
-            m_trace->dump(i);
-            m_trace->close();
-            return 0;
+        if(clk == 1) {
+            instr_port.read_from_port();
+            data_port.read_from_port();
         }
         core->clk = clk;
         core->eval();
-        if(clk==1){
-            core->ACK = prev_ack;
-            prev_ack = ack;
-            ack = 0;
-            core->instr_in = main_memory[instr_addr+3] << 24 | main_memory[instr_addr+2] << 16 | main_memory[instr_addr+1] << 8 | main_memory[instr_addr];
-            if(data_stb & !data_we) {
-                if(data_addr >= MEM_SIZE) {
-                    printf("Attempted to read out of bounds at address %x at instruction %x on cycle %u\n", data_addr, instr_addr, i);
-                    m_trace->dump(i);
-                    m_trace->close();
-                    return 0;
-                }
-                int data_in = 0;
-                if(data_sel & 1 << 3) data_in|=main_memory[data_addr+3] << 24;
-                if(data_sel & 1 << 2) data_in|=main_memory[data_addr+2] << 16;
-                if(data_sel & 1 << 1) data_in|=main_memory[data_addr+1] << 8;
-                if(data_sel & 1 << 0) data_in|=main_memory[data_addr];
-                core->DAT_R =  data_in;
-                ack = 1;
-            }
+        if(clk == 1) {
+            instr_port.write_to_port();
+            data_port.write_to_port();
         }
         core->eval();
-        m_trace->dump(i);
+        m_trace->dump(curr_cycle);
     }
+
     m_trace->close();
     if(strstr(argv[1], "stresstest")!=NULL) {
         int failed = 0;

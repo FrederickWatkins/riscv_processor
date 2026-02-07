@@ -2,7 +2,7 @@
 module hc #(
     parameter pipeline_length = 4
 ) (
-    input logic [31:2] instr [pipeline_length-1:0],
+    input logic [31:2] instr [pipeline_length-1:1],
 
     output logic stall
 );
@@ -10,9 +10,9 @@ module hc #(
     logic [4:0] rs2;
 
     always @(*) begin
-        rs1 = instr[0][19:15];
-        rs2 = instr[0][24:20];
-        case(instr[0][6:2])
+        rs1 = instr[1][19:15];
+        rs2 = instr[1][24:20];
+        case(instr[1][6:2])
         LOAD: begin
             rs2 = 0;
         end
@@ -40,7 +40,7 @@ module hc #(
 
     always @(*) begin
         stall = 0;
-        for(int i = 1; i < pipeline_length; i += 1) begin
+        for(int i = 2; i < pipeline_length; i += 1) begin
             case(instr[i][6:2])
             LOAD: stall |= (instr[i][11:7] == rs1 | instr[i][11:7] == rs2) & (instr[i][11:7] != 0);
             JALR: stall |= (instr[i][11:7] == rs1 | instr[i][11:7] == rs2) & (instr[i][11:7] != 0);

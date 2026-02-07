@@ -1,44 +1,147 @@
 [*]
 [*] GTKWave Analyzer v3.3.124 (w)1999-2025 BSI
-[*] Thu Feb  5 04:21:03 2026
+[*] Sat Feb  7 11:41:16 2026
 [*]
 [dumpfile] "/home/freddie/Developement/riscv_processor/obj_dir/core.vcd"
-[dumpfile_mtime] "Thu Feb  5 04:19:59 2026"
-[dumpfile_size] 11149907
+[dumpfile_mtime] "Sat Feb  7 11:38:56 2026"
+[dumpfile_size] 319373
 [savefile] "/home/freddie/Developement/riscv_processor/testbench/sav/core.sav"
-[timestart] 1
+[timestart] 13
 [size] 1920 1001
-[pos] -1 -1
-*-2.900000 35 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] -27 -24
+*-2.900000 34 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.core_shim.
+[treeopen] TOP.core_shim.core.
+[treeopen] TOP.core_shim.core.hc.
+[treeopen] TOP.core_shim.core.ifu.
+[treeopen] TOP.core_shim.core.lsu.
 [sst_width] 268
-[signals_width] 182
+[signals_width] 198
 [sst_expanded] 1
 [sst_vpaned_height] 297
 @28
 TOP.core_shim.core.clk
-@22
-TOP.core_shim.core.curr_pc[31:0]
-TOP.core_shim.core.fetched_instr[29:0]
-@28
-TOP.core_shim.core.funct3[2:0]
-TOP.core_shim.core.ieu_re
-@22
-TOP.core_shim.core.ieu_reg[31:0]
-TOP.core_shim.core.ieu_result[31:0]
-@28
-TOP.core_shim.core.ieu_we
-@22
-TOP.core_shim.core.inc_pc[31:0]
-TOP.core_shim.core.instr_addr[31:0]
-TOP.core_shim.core.instr_in[31:0]
-TOP.core_shim.core.ja[31:0]
+@800200
+-Top
 @28
 TOP.core_shim.core.je
+TOP.core_shim.core.stall[0]
 @22
-TOP.core_shim.core.rd_data[31:0]
+TOP.core_shim.core.curr_pc[0][31:0]
+TOP.core_shim.core.curr_pc[1][31:0]
+TOP.core_shim.core.curr_pc[2][31:0]
+TOP.core_shim.core.ieu_result[2][31:0]
+TOP.core_shim.core.ieu_result[3][31:0]
+TOP.core_shim.core.inc_pc[0][31:0]
+TOP.core_shim.core.inc_pc[1][31:0]
+TOP.core_shim.core.inc_pc[2][31:0]
+TOP.core_shim.core.inc_pc[3][31:0]
+TOP.core_shim.core.instr[0][31:2]
+TOP.core_shim.core.instr[1][31:2]
+TOP.core_shim.core.instr[2][31:2]
+TOP.core_shim.core.instr[3][31:2]
 @28
-TOP.core_shim.core.stall
+TOP.core_shim.core.jack
+TOP.core_shim.core.je
+@22
+TOP.core_shim.core.lsu_data[31:0]
+TOP.core_shim.core.pipeline_length[31:0]
+TOP.core_shim.core.rs1_data[2][31:0]
+TOP.core_shim.core.rs1_data[3][31:0]
+TOP.core_shim.core.rs2_data[2][31:0]
+TOP.core_shim.core.rs2_data[3][31:0]
+@28
+#{TOP.core_shim.core.stall[0:3]} TOP.core_shim.core.stall[0] TOP.core_shim.core.stall[1] TOP.core_shim.core.stall[2] TOP.core_shim.core.stall[3]
+#{TOP.core_shim.core.stalled[0:3]} TOP.core_shim.core.stalled[0] TOP.core_shim.core.stalled[1] TOP.core_shim.core.stalled[2] TOP.core_shim.core.stalled[3]
+@1000200
+-Top
+@c00200
+-Data bus
+@28
+TOP.core_shim.data_bus.ACK
+@22
+TOP.core_shim.data_bus.ADR[31:0]
+@28
+TOP.core_shim.data_bus.CYC
+@22
+TOP.core_shim.data_bus.DAT_R[31:0]
+TOP.core_shim.data_bus.DAT_W[31:0]
+TOP.core_shim.data_bus.SEL[3:0]
+@28
+TOP.core_shim.data_bus.STB
+TOP.core_shim.data_bus.WE
+@1401200
+-Data bus
+@c00200
+-Instruction bus
+@28
+TOP.core_shim.instr_bus.ACK
+@22
+TOP.core_shim.instr_bus.ADR[31:0]
+@28
+TOP.core_shim.instr_bus.CYC
+@22
+TOP.core_shim.instr_bus.DAT_R[31:0]
+TOP.core_shim.instr_bus.DAT_W[31:0]
+TOP.core_shim.instr_bus.SEL[3:0]
+@28
+TOP.core_shim.instr_bus.STB
+TOP.core_shim.instr_bus.WE
+@1401200
+-Instruction bus
+@c00200
+-Hazard controller
+@22
+TOP.core_shim.core.hc.instr[0][31:2]
+TOP.core_shim.core.hc.instr[1][31:2]
+TOP.core_shim.core.hc.instr[2][31:2]
+TOP.core_shim.core.hc.instr[3][31:2]
+TOP.core_shim.core.hc.pipeline_length[31:0]
+TOP.core_shim.core.hc.rs1[4:0]
+TOP.core_shim.core.hc.rs2[4:0]
+@28
+TOP.core_shim.core.hc.stall
+@1401200
+-Hazard controller
+@c00200
+-JBU
+@28
+TOP.core_shim.core.jbu.funct3[2:0]
+@22
+TOP.core_shim.core.jbu.instr[31:2]
+@28
+TOP.core_shim.core.jbu.jack
+TOP.core_shim.core.jbu.je
+@22
+TOP.core_shim.core.jbu.opcode[4:0]
+TOP.core_shim.core.jbu.rs1_data[31:0]
+TOP.core_shim.core.jbu.rs2_data[31:0]
+@1401200
+-JBU
+@800201
+-IFU
+@29
+TOP.core_shim.core.ifu.clk
+TOP.core_shim.core.ifu.compressed
+@23
+TOP.core_shim.core.ifu.curr_pc[31:0]
+@29
+TOP.core_shim.core.ifu.curr_state
+@23
+TOP.core_shim.core.ifu.inc_pc[31:0]
+TOP.core_shim.core.ifu.instr_out[31:2]
+TOP.core_shim.core.ifu.ja[31:0]
+@29
+TOP.core_shim.core.ifu.jack
+TOP.core_shim.core.ifu.je
+TOP.core_shim.core.ifu.next_state
+@23
+TOP.core_shim.core.ifu.opcode[4:0]
+@29
+TOP.core_shim.core.ifu.stall
+TOP.core_shim.core.ifu.stalled
+@1000201
+-IFU
 [pattern_trace] 1
 [pattern_trace] 0

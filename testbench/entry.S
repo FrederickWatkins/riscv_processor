@@ -4,6 +4,10 @@
 
 _start:
     nop
+    nop
+    nop
+    nop
+    nop
     /* * 1. Initialize the Stack Pointer (sp)
      * _stack_top is defined in the linker script.
      * We use the 'la' pseudo-instruction which expands to LUI/ADDI
