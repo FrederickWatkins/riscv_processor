@@ -53,7 +53,11 @@ module core #(
     endgenerate
 
     always @(posedge clk) begin
-        ieu_result[3] <= ieu_result[2];
+        if(!stall[3]) begin
+            ieu_result[3] <= ieu_result[2];
+            rs1_data[3] <= rs1_data[2];
+            rs2_data[3] <= rs2_data[2];
+        end
     end
 
     hc #(

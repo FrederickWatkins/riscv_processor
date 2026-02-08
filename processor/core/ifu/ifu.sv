@@ -28,7 +28,7 @@ module ifu #(
 
     logic [4:0] opcode = instr_out[6:2];
 
-    logic compressed, pc_stall, instr_escaped;
+    logic compressed, pc_stall;
 
     assign instr_bus.SEL = 4'b1111; // 32 bits
 
@@ -48,16 +48,14 @@ module ifu #(
         end
         case(curr_state)
         RUNNING: begin
-            if(opcode == BRANCH | opcode == JALR | opcode == JAL) begin
+            if((opcode == BRANCH | opcode == JALR | opcode == JAL) & !stall) begin
                 pc_stall = 1;
                 next_state = JUMP;
             end
         end
         JUMP: begin
             pc_stall = 1;
-            if(instr_escaped) begin
-                instr_out = 'h4;
-            end
+            instr_out = 'h4;
             if(jack) begin
                 pc_stall = 0;
                 next_state = RUNNING;
@@ -68,8 +66,6 @@ module ifu #(
 
     always @(posedge clk) begin
         curr_state <= next_state;
-        if(curr_state==RUNNING && next_state==JUMP) instr_escaped <= 0;
-        if(!stall) instr_escaped <= 1;
     end
 
     pc #(

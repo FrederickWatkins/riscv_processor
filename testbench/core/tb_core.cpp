@@ -65,12 +65,12 @@ int main(int argc, char** argv) {
     int curr_cycle = 0;
 
     WishboneSlave instr_port = WishboneSlave(
-        main_memory, MEM_SIZE, 1, &curr_cycle, &core->INSTR_ADR, &core->INSTR_SEL, &core->INSTR_WE,
+        main_memory, MEM_SIZE, 3, &curr_cycle, &core->INSTR_ADR, &core->INSTR_SEL, &core->INSTR_WE,
         &core->INSTR_STB, &core->INSTR_CYC, &core->INSTR_DAT_W, &core->INSTR_DAT_R, &core->INSTR_ACK
     );
 
     WishboneSlave data_port = WishboneSlave(
-        main_memory, MEM_SIZE, 1, &curr_cycle, &core->DATA_ADR, &core->DATA_SEL, &core->DATA_WE,
+        main_memory, MEM_SIZE, 5, &curr_cycle, &core->DATA_ADR, &core->DATA_SEL, &core->DATA_WE,
         &core->DATA_STB, &core->DATA_CYC, &core->DATA_DAT_W, &core->DATA_DAT_R, &core->DATA_ACK
     );
 
