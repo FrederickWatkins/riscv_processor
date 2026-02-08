@@ -1,3 +1,4 @@
+# THIS REPOSITORY IS ARCHIVED DUE TO ME BEING SICK OF C++ AND THE WAY I DESIGNED THIS. THE NEW ONE IS AT https://github.com/FrederickWatkins/cv-fry
 <img width="602" height="398" alt="output-onlinepngtools" src="https://github.com/user-attachments/assets/7b765bcb-ba90-423b-a4c0-b9209a1f6bad" />
 
 ## Plan
