@@ -1,21 +1,23 @@
 [*]
 [*] GTKWave Analyzer v3.3.124 (w)1999-2025 BSI
-[*] Sat Feb  7 11:41:16 2026
+[*] Sun Feb  8 01:41:56 2026
 [*]
 [dumpfile] "/home/freddie/Developement/riscv_processor/obj_dir/core.vcd"
-[dumpfile_mtime] "Sat Feb  7 11:38:56 2026"
-[dumpfile_size] 319373
+[dumpfile_mtime] "Sun Feb  8 01:39:32 2026"
+[dumpfile_size] 259402
 [savefile] "/home/freddie/Developement/riscv_processor/testbench/sav/core.sav"
-[timestart] 13
+[timestart] 0
 [size] 1920 1001
 [pos] -27 -24
-*-2.900000 34 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-2.900000 71 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.core_shim.
 [treeopen] TOP.core_shim.core.
 [treeopen] TOP.core_shim.core.hc.
+[treeopen] TOP.core_shim.core.ieu.
 [treeopen] TOP.core_shim.core.ifu.
 [treeopen] TOP.core_shim.core.lsu.
+[treeopen] TOP.core_shim.core.rf.
 [sst_width] 268
 [signals_width] 198
 [sst_expanded] 1
@@ -28,6 +30,10 @@ TOP.core_shim.core.clk
 TOP.core_shim.core.je
 TOP.core_shim.core.stall[0]
 @22
+TOP.core_shim.core.instr(0)[31:2]
+TOP.core_shim.core.instr(1)[31:2]
+TOP.core_shim.core.instr(2)[31:2]
+TOP.core_shim.core.instr(3)[31:2]
 TOP.core_shim.core.curr_pc[0][31:0]
 TOP.core_shim.core.curr_pc[1][31:0]
 TOP.core_shim.core.curr_pc[2][31:0]
@@ -37,10 +43,6 @@ TOP.core_shim.core.inc_pc[0][31:0]
 TOP.core_shim.core.inc_pc[1][31:0]
 TOP.core_shim.core.inc_pc[2][31:0]
 TOP.core_shim.core.inc_pc[3][31:0]
-TOP.core_shim.core.instr[0][31:2]
-TOP.core_shim.core.instr[1][31:2]
-TOP.core_shim.core.instr[2][31:2]
-TOP.core_shim.core.instr[3][31:2]
 @28
 TOP.core_shim.core.jack
 TOP.core_shim.core.je
@@ -93,7 +95,6 @@ TOP.core_shim.instr_bus.WE
 @c00200
 -Hazard controller
 @22
-TOP.core_shim.core.hc.instr[0][31:2]
 TOP.core_shim.core.hc.instr[1][31:2]
 TOP.core_shim.core.hc.instr[2][31:2]
 TOP.core_shim.core.hc.instr[3][31:2]
@@ -119,29 +120,111 @@ TOP.core_shim.core.jbu.rs1_data[31:0]
 TOP.core_shim.core.jbu.rs2_data[31:0]
 @1401200
 -JBU
-@800201
+@c00200
 -IFU
-@29
+@28
 TOP.core_shim.core.ifu.clk
 TOP.core_shim.core.ifu.compressed
-@23
+@22
 TOP.core_shim.core.ifu.curr_pc[31:0]
-@29
+@28
 TOP.core_shim.core.ifu.curr_state
-@23
+@22
 TOP.core_shim.core.ifu.inc_pc[31:0]
 TOP.core_shim.core.ifu.instr_out[31:2]
 TOP.core_shim.core.ifu.ja[31:0]
-@29
+@28
 TOP.core_shim.core.ifu.jack
 TOP.core_shim.core.ifu.je
 TOP.core_shim.core.ifu.next_state
-@23
+@22
 TOP.core_shim.core.ifu.opcode[4:0]
-@29
+@28
 TOP.core_shim.core.ifu.stall
 TOP.core_shim.core.ifu.stalled
-@1000201
+TOP.core_shim.core.ifu.pc.compressed
+@22
+TOP.core_shim.core.ifu.pc.curr_pc[31:0]
+TOP.core_shim.core.ifu.pc.inc_pc[31:0]
+TOP.core_shim.core.ifu.pc.ja[31:0]
+@28
+TOP.core_shim.core.ifu.pc.je
+@22
+TOP.core_shim.core.ifu.pc.next_pc[31:0]
+@28
+TOP.core_shim.core.ifu.pc.stall
+@1401200
 -IFU
+@800200
+-IEU
+@22
+TOP.core_shim.core.ieu.curr_pc[31:0]
+@28
+TOP.core_shim.core.ieu.funct3[0][2:0]
+TOP.core_shim.core.ieu.funct3[1][2:0]
+@22
+TOP.core_shim.core.ieu.funct7[0][6:0]
+TOP.core_shim.core.ieu.funct7[1][6:0]
+TOP.core_shim.core.ieu.imm[0][31:0]
+TOP.core_shim.core.ieu.imm[1][31:0]
+TOP.core_shim.core.ieu.instr[31:2]
+@28
+#{TOP.core_shim.core.ieu.op1_pc[0:1]} TOP.core_shim.core.ieu.op1_pc[0] TOP.core_shim.core.ieu.op1_pc[1]
+#{TOP.core_shim.core.ieu.op2_imm[0:1]} TOP.core_shim.core.ieu.op2_imm[0] TOP.core_shim.core.ieu.op2_imm[1]
+@22
+TOP.core_shim.core.ieu.operand_1[31:0]
+TOP.core_shim.core.ieu.operand_2[31:0]
+TOP.core_shim.core.ieu.result[31:0]
+TOP.core_shim.core.ieu.rs1_data[31:0]
+TOP.core_shim.core.ieu.rs2_data[31:0]
+@28
+TOP.core_shim.core.ieu.stall
+@1000200
+-IEU
+@800201
+-Register file
+@23
+TOP.core_shim.core.rf.irf.ram[1][31:0]
+TOP.core_shim.core.rf.irf.ram[2][31:0]
+TOP.core_shim.core.rf.irf.ram[3][31:0]
+TOP.core_shim.core.rf.irf.ram[4][31:0]
+TOP.core_shim.core.rf.irf.ram[5][31:0]
+TOP.core_shim.core.rf.irf.ram[6][31:0]
+TOP.core_shim.core.rf.irf.ram[7][31:0]
+TOP.core_shim.core.rf.irf.ram[8][31:0]
+TOP.core_shim.core.rf.irf.ram[9][31:0]
+TOP.core_shim.core.rf.irf.ram[10][31:0]
+TOP.core_shim.core.rf.irf.ram[11][31:0]
+TOP.core_shim.core.rf.irf.ram[12][31:0]
+TOP.core_shim.core.rf.irf.ram[13][31:0]
+TOP.core_shim.core.rf.irf.ram[14][31:0]
+TOP.core_shim.core.rf.irf.ram[15][31:0]
+TOP.core_shim.core.rf.irf.ram[16][31:0]
+TOP.core_shim.core.rf.irf.ram[17][31:0]
+TOP.core_shim.core.rf.irf.ram[18][31:0]
+TOP.core_shim.core.rf.irf.ram[19][31:0]
+TOP.core_shim.core.rf.irf.ram[20][31:0]
+TOP.core_shim.core.rf.irf.ram[21][31:0]
+TOP.core_shim.core.rf.irf.ram[22][31:0]
+TOP.core_shim.core.rf.irf.ram[23][31:0]
+TOP.core_shim.core.rf.irf.ram[24][31:0]
+TOP.core_shim.core.rf.irf.ram[25][31:0]
+TOP.core_shim.core.rf.irf.ram[26][31:0]
+TOP.core_shim.core.rf.irf.ram[27][31:0]
+TOP.core_shim.core.rf.irf.ram[28][31:0]
+TOP.core_shim.core.rf.irf.ram[29][31:0]
+TOP.core_shim.core.rf.irf.ram[30][31:0]
+TOP.core_shim.core.rf.irf.ram[31][31:0]
+TOP.core_shim.core.rf.irf.rd_addr[4:0]
+TOP.core_shim.core.rf.irf.rd_data[31:0]
+@29
+TOP.core_shim.core.rf.irf.rd_we
+@23
+TOP.core_shim.core.rf.irf.rs1_addr[4:0]
+TOP.core_shim.core.rf.irf.rs1_data[31:0]
+TOP.core_shim.core.rf.irf.rs2_addr[4:0]
+TOP.core_shim.core.rf.irf.rs2_data[31:0]
+@1000201
+-Register file
 [pattern_trace] 1
 [pattern_trace] 0

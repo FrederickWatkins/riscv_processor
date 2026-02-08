@@ -2,7 +2,7 @@
 module hc #(
     parameter pipeline_length = 4
 ) (
-    input logic [31:2] instr [pipeline_length-1:1],
+    input logic [31:2] instr [pipeline_length-1:0],
 
     output logic stall
 );

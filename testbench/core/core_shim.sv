@@ -32,17 +32,20 @@ module core_shim #(
     assign INSTR_STB = instr_bus.STB;
     assign INSTR_CYC = instr_bus.CYC;
     assign INSTR_DAT_W = instr_bus.DAT_W;
-    assign instr_bus.DAT_R = INSTR_DAT_R;
-    assign instr_bus.ACK = INSTR_ACK;
 
     assign DATA_ADR = data_bus.ADR;
     assign DATA_SEL = data_bus.SEL;
     assign DATA_WE = data_bus.WE;
     assign DATA_STB = data_bus.STB;
     assign DATA_CYC = data_bus.CYC;
+
+    always @(posedge clk) begin
+        instr_bus.DAT_R <= INSTR_DAT_R;
+        instr_bus.ACK <= INSTR_ACK;
+        data_bus.DAT_R <= DATA_DAT_R;
+        data_bus.ACK <= DATA_ACK;
+    end
     assign DATA_DAT_W = data_bus.DAT_W;
-    assign data_bus.DAT_R = DATA_DAT_R;
-    assign data_bus.ACK = DATA_ACK;
 
     core #(
         .XLEN(XLEN)

@@ -1,5 +1,5 @@
 // RV32IC core
-
+/* verilator lint_off UNOPTFLAT */
 module core #(
     parameter XLEN = 32
 ) (
@@ -14,7 +14,7 @@ module core #(
     localparam NOP = 30'h4;
 
 
-    logic [31:2] instr [pipeline_length-1:0];
+    logic [31:2] instr [pipeline_length-1:0] /* verilator split_var */;
     logic [XLEN-1:0] curr_pc [pipeline_length-1:0];
     logic [XLEN-1:0] inc_pc [pipeline_length-1:0];
     logic [XLEN-1:0] rs1_data[pipeline_length-1:2], rs2_data[pipeline_length-1:2], ieu_result[pipeline_length-1:2], lsu_data;
@@ -22,28 +22,44 @@ module core #(
     logic stall[pipeline_length-1:0];
     logic je, jack;
 
-    always @(*) begin
-        stall[pipeline_length-1] = stalled[pipeline_length-1];
-        for (int i = pipeline_length - 1; i > 0; i = i - 1) begin
-            stall[i - 1] = stalled[i - 1] | stall[i];
+    generate
+        for (genvar i = 0; i < pipeline_length; i++) begin : gen_stall
+            if (i == pipeline_length - 1) begin: gen_final_stall
+                // Final stage only depends on its own stalled signal
+                assign stall[i] = stalled[i];
+            end else begin: gen_prop_stall
+                // Higher stages propagate stalls down to lower stages
+                assign stall[i] = stalled[i] | stall[i+1];
+            end
         end
-    end
+    endgenerate
+
+    generate
+        for (genvar i = 1; i < pipeline_length; i++) begin : gen_pipe_regs
+            always @(posedge clk) begin
+                // Standard propagation
+                if (!stall[i]) begin
+                    instr[i]   <= instr[i-1];
+                    inc_pc[i]  <= inc_pc[i-1];
+                    curr_pc[i] <= curr_pc[i-1];
+                end
+                
+                // Injection of NOP on a bubble
+                if (stall[i-1] && !stall[i]) begin
+                    instr[i] <= NOP;
+                end
+            end
+        end
+    endgenerate
 
     always @(posedge clk) begin
-        for (int i = 1; i < pipeline_length-1; i += 1) begin
-            if(!stall[i]) begin
-                instr[i] <= instr[i - 1];
-                inc_pc[i] <= inc_pc[i - 1];
-                curr_pc[i] <= curr_pc[i - 1];
-            end
-            if(stall[i]) instr[i] <= NOP;
-        end
+        ieu_result[3] <= ieu_result[2];
     end
 
     hc #(
         .pipeline_length(pipeline_length)
     ) hc (
-        .instr(instr[3:1]),
+        .instr(instr[3:0]),
         .stall(stalled[1])
     );
 
@@ -121,3 +137,4 @@ module core #(
         .data(lsu_data)
     );
 endmodule
+/* verilator lint_on UNOPTFLAT */

@@ -13,11 +13,13 @@ module sync_sram #(
     output logic [XLEN-1:0] rs1_data,
     output logic [XLEN-1:0] rs2_data
 );
-    logic [XLEN-1:0] ram [(1<<depth)-1:0];
+    logic [XLEN-1:0] ram [(1<<depth)-1:1];
 
     always @(posedge clk) begin
-        if(rd_we) ram[rd_addr] <= rd_data;
-        rs1_data <= ram[rs1_addr];
-        rs2_data <= ram[rs2_addr];
+        if(rd_we && rd_addr != 0) ram[rd_addr] <= rd_data;
+        if(rs1_addr != 0) rs1_data <= ram[rs1_addr];
+        else rs1_data <= 0;
+        if(rs2_addr != 0) rs2_data <= ram[rs2_addr];
+        else rs2_data <= 0;
     end
 endmodule
