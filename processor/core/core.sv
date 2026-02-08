@@ -14,7 +14,7 @@ module core #(
     localparam NOP = 30'h4;
 
 
-    logic [31:2] instr [pipeline_length-1:1], fetched_instr;
+    logic [31:2] instr [pipeline_length-1:0];
     logic [XLEN-1:0] curr_pc [pipeline_length-1:0];
     logic [XLEN-1:0] inc_pc [pipeline_length-1:0];
     logic [XLEN-1:0] rs1_data[pipeline_length-1:2], rs2_data[pipeline_length-1:2], ieu_result[pipeline_length-1:2], lsu_data;
@@ -30,8 +30,7 @@ module core #(
     end
 
     always @(posedge clk) begin
-        instr[1] <= fetched_instr;
-        for (int i = 2; i < pipeline_length; i += 1) begin
+        for (int i = 1; i < pipeline_length-1; i += 1) begin
             if(!stall[i]) begin
                 instr[i] <= instr[i - 1];
                 inc_pc[i] <= inc_pc[i - 1];
@@ -75,7 +74,7 @@ module core #(
         .instr_bus,
         // Ouputs
         .stalled(stalled[0]),
-        .instr_out(fetched_instr),
+        .instr_out(instr[0]),
         .curr_pc(curr_pc[0]),
         .inc_pc(inc_pc[0])
     );

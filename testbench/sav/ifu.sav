@@ -1,0 +1,64 @@
+[*]
+[*] GTKWave Analyzer v3.3.124 (w)1999-2025 BSI
+[*] Sat Feb  7 13:32:16 2026
+[*]
+[dumpfile] "/home/freddie/Developement/riscv_processor/obj_dir/ifu.vcd"
+[dumpfile_mtime] "Sat Feb  7 13:29:36 2026"
+[dumpfile_size] 10763
+[savefile] "/home/freddie/Developement/riscv_processor/testbench/sav/ifu.sav"
+[timestart] 0
+[size] 1920 1001
+[pos] -27 -24
+*-2.900000 27 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[treeopen] TOP.ifu_shim.
+[sst_width] 268
+[signals_width] 174
+[sst_expanded] 1
+[sst_vpaned_height] 297
+@29
+TOP.ifu_shim.clk
+@28
+TOP.ifu_shim.INSTR_ACK
+@22
+TOP.ifu_shim.INSTR_ADR[31:0]
+@28
+TOP.ifu_shim.INSTR_CYC
+@22
+TOP.ifu_shim.INSTR_DAT_R[31:0]
+TOP.ifu_shim.INSTR_DAT_W[31:0]
+TOP.ifu_shim.INSTR_SEL[3:0]
+@28
+TOP.ifu_shim.INSTR_STB
+TOP.ifu_shim.INSTR_WE
+@22
+TOP.ifu_shim.XLEN[31:0]
+TOP.ifu_shim.curr_pc[31:0]
+TOP.ifu_shim.inc_pc[31:0]
+TOP.ifu_shim.instr_out[31:2]
+TOP.ifu_shim.ja[31:0]
+@28
+TOP.ifu_shim.jack
+TOP.ifu_shim.je
+TOP.ifu_shim.stall
+TOP.ifu_shim.ifu.compressed
+@22
+TOP.ifu_shim.ifu.curr_pc[31:0]
+@28
+TOP.ifu_shim.ifu.curr_state
+@22
+TOP.ifu_shim.ifu.inc_pc[31:0]
+TOP.ifu_shim.ifu.instr_decomp[31:2]
+TOP.ifu_shim.ifu.instr_out[31:2]
+TOP.ifu_shim.ifu.ja[31:0]
+@28
+TOP.ifu_shim.ifu.jack
+TOP.ifu_shim.ifu.je
+TOP.ifu_shim.ifu.next_state
+@22
+TOP.ifu_shim.ifu.opcode[4:0]
+@28
+TOP.ifu_shim.ifu.pc_stall
+TOP.ifu_shim.ifu.stall
+[pattern_trace] 1
+[pattern_trace] 0

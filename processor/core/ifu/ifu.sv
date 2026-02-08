@@ -26,7 +26,7 @@ module ifu #(
 
     logic [31:2] instr_decomp;
 
-    logic [4:0] opcode = instr_decomp[6:2];
+    logic [4:0] opcode = instr_out[6:2];
 
     logic compressed;
 
@@ -35,23 +35,25 @@ module ifu #(
     assign instr_bus.WE = 0; // Never used for writing
     assign instr_bus.DAT_W = 0;
 
-    assign instr_out=stall?'h4:instr_decomp;
-
     always @(*) begin
         next_state = curr_state;
         stalled = 0;
+        instr_out = instr_decomp;
+        instr_bus.STB = 1;
+        instr_bus.CYC = 1;
+        if(!instr_bus.ACK) begin
+            stalled = 1;
+            instr_out = 'h4;
+        end
         case(curr_state)
         RUNNING: begin
             instr_bus.STB = 1;
             instr_bus.CYC = 1;
-            if(!instr_bus.ACK) begin
-                stalled = 1;
-            end
             if(opcode == BRANCH | opcode == JALR | opcode == JAL) begin
                 stalled = 1;
+                next_state = JUMP;
                 instr_bus.STB = 0;
                 instr_bus.CYC = 0;
-                next_state = JUMP;
             end
         end
         JUMP: begin

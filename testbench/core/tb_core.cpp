@@ -9,6 +9,8 @@
 #include <verilated_vcd_c.h>
 #include "Vcore.h"
 
+#include "../utils/wishbone.h"
+
 #define TEST_RESULTS_BASE 0x00002000 
 #define MEM_SIZE 0x1000000
 
@@ -36,86 +38,6 @@ uint32_t expected_results[] = {
     0x00000088, // [20] LBU (Zero extended 0x88)
     0xABCDE000, // [21] LUI (Upper immediate)
     0xDEADBEEF  // [22] Final Success Marker
-};
-
-class WishboneSlave {
-    public: 
-        WishboneSlave(uint8_t* memory, unsigned int memory_size, int delay, int* curr_cycle, uint32_t* ADR,
-                      uint8_t* SEL, unsigned char* WE, unsigned char* STB, unsigned char* CYC, uint32_t* DAT_W, uint32_t* DAT_R,
-                      unsigned char* ACK){
-            this->memory = memory;
-            this->memory_size = memory_size;
-            this->delay = delay;
-            this->last_handshake = -delay - 1;
-            this->handshake_active = false;
-            this->curr_cycle = curr_cycle;
-            this->ADR = ADR;
-            this->SEL = SEL;
-            this->WE = WE;
-            this->STB = STB;
-            this->CYC = CYC;
-            this->DAT_W = DAT_W;
-            this->DAT_R = DAT_R;
-            this->ACK = ACK;
-        }
-        void read_from_port() {
-            if(*STB && *CYC && *WE) {
-                if(*ADR >= memory_size - 4) {
-                    printf("DUT attempted to write out of bounds on cycle %x at ADR %x\n", *curr_cycle, *ADR);
-                }
-                for(int i = 0; i < 4; i++) {
-                    if((*SEL >> i) & 1) {
-                        memory[*ADR + i] = (*DAT_W>>8) & 0xFF;
-                    }
-                }
-                if(!handshake_active) {
-                    last_handshake = *curr_cycle;
-                    handshake_active = true;
-                }
-            }
-        }
-        void write_to_port() {
-            if(*STB && *CYC && !*WE) {
-                if(*ADR >= memory_size - 4) {
-                    printf("DUT attempted to read out of bounds on cycle %x at ADR %x\n", *curr_cycle, *ADR);
-                }
-                if(!handshake_active) {
-                    last_handshake = *curr_cycle;
-                    handshake_active = true;
-                }
-            }
-            if(handshake_active && *curr_cycle - last_handshake >= delay) {
-                *DAT_R = 0;
-                for(int i = 0; i < 4; i++) {
-                    if((*SEL >> i) & 1) {
-                        *DAT_R |= (uint32_t)memory[*ADR + i] << (i * 8);
-                        if(*ADR == 4) printf("%x\n", *DAT_R);
-                    }
-                }
-                *ACK = 1;
-                handshake_active = false;
-            } else {
-                *ACK = 0;
-            }
-        }
-    private:
-        // Config
-        uint8_t* memory;
-        unsigned int memory_size;
-        int delay;
-        int last_handshake;
-        bool handshake_active;
-        int* curr_cycle;
-        // Wishbone outputs
-        uint32_t* ADR;
-        uint8_t* SEL;
-        unsigned char* WE;
-        unsigned char* STB;
-        unsigned char* CYC;
-        uint32_t* DAT_W;
-        // Wishbone inputs
-        uint32_t* DAT_R;
-        unsigned char* ACK;
 };
 
 int main(int argc, char** argv) {
@@ -157,14 +79,14 @@ int main(int argc, char** argv) {
         clk = curr_cycle % 2;
         contextp->timeInc(1);
         if(clk == 1) {
-            instr_port.read_from_port();
-            data_port.read_from_port();
+            instr_port.write_to_port();
+            data_port.write_to_port();
         }
         core->clk = clk;
         core->eval();
-        if(clk == 1) {
-            instr_port.write_to_port();
-            data_port.write_to_port();
+        if(clk == 0) {
+            instr_port.read_from_port();
+            data_port.read_from_port();
         }
         core->eval();
         m_trace->dump(curr_cycle);
